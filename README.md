@@ -27,7 +27,7 @@ python3 labcraft.py
 - README.md:
   The file you are currently reading.
 
-- labcrafy.py:
+- labcraft.py:
   The main labcraft code.
 
 - assetTest.py:
