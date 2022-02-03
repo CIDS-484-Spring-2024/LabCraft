@@ -22,7 +22,7 @@ To run simply:
 python3 labcraft.py
 ```
 
-## Windows Installation
+## Windows Installation:
 
 
 ## Manifest:
