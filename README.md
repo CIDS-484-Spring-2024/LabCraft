@@ -14,7 +14,6 @@ Labcraft is built on the Ursina engine (https://www.ursinaengine.org)
 To install Ursina use pip:
 ``` bash
 pip install ursina
-
 ```
 
 ## Running:
@@ -22,6 +21,9 @@ To run simply:
 ```bash
 python3 labcraft.py
 ```
+
+## Windows Installation
+
 
 ## Manifest:
 - README.md:
