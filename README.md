@@ -21,16 +21,20 @@ If Python 3.6 or newer is already installed, you may skip to the [Ursina install
 2. Download and run the installer from Python.org's [Downloads page for Windows](https://www.python.org/downloads/windows/)
 
 
-
-#### Troubleshooting:
-If you run into an error concerning a ".deleteme" file, just re-run the installation command.
-
 ## Ursina:
 Labcraft is built on the Ursina engine (https://www.ursinaengine.org)
 To install Ursina use pip:
 ``` bash
 pip install ursina
 ```
+
+Or on Windows CMD/PowerShell:
+```CMD
+python -m pip install ursina
+```
+
+#### Troubleshooting:
+If you run into an error concerning a ".deleteme" file, just re-run the installation command.
 
 # Running:
 To run, simply:
