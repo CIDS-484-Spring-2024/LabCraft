@@ -16,7 +16,7 @@ sudo apt-get install python3
 ``` 
 python --version
 ```
-If Python 3.6 or newer is already installed, you may skip to the Ursina installation.
+If Python 3.6 or newer is already installed, you may skip to the [Ursina installation](https://github.com/quickMaffs44/labcraft/blob/main/README.md#ursina).
 
 2. Download and run the installer from Python.org's [Downloads page for Windows](https://www.python.org/downloads/windows/)
 
