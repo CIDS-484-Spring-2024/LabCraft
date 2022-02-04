@@ -10,6 +10,21 @@ Labcraft uses python 3.6:
 sudo apt-get install python3
 ```
 
+### On Windows:
+Check Your Python version from the Windows CMD or PowerShell:
+``` 
+python --version
+```
+If Python 3.6 or newer is already installed, you may skip to the Ursina installation.
+
+Download Installer from Python.org's [Downloads page for Windows](https://www.python.org/downloads/windows/)
+
+
+
+#### Troubleshooting:
+If you run into an error concerning a ".deleteme" file, just re-run the installation command.
+
+### Ursina:
 Labcraft is built on the Ursina engine (https://www.ursinaengine.org)
 To install Ursina use pip:
 ``` bash
