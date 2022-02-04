@@ -37,7 +37,7 @@ To run, simply:
 ```bash
 python3 labcraft.py
 ```
-Or on Windows:
+Or:
 ```bash
 python labcraft.py
 ```
