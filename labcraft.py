@@ -168,6 +168,6 @@ terrainGen()
 player = FirstPersonController()
 sky = Sky()
 hand = Hand()
-pendulum()
+# pendulum()
 
 app.run()
