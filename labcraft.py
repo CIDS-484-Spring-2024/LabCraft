@@ -21,8 +21,8 @@ pendulum_texture = load_texture('assets/mc_brick.png')
 punch_sound   = Audio('assets/punch_sound',loop = False, autoplay = False)
 block_pick = 1
 
-window.fps_counter.enabled = False
-window.exit_button.visible = False
+window.fps_counter.enabled = True
+window.exit_button.visible = True
 
 debug = False
 
