@@ -59,6 +59,14 @@ def update():
         player.x = 1
         player.z = 1
 
+class Inventory(Entity):
+    def __init__(self):
+        super().__init__(
+            parent = camera.ui,
+            model = 'quad'
+        )
+
+
 class Voxel(Button):
     def __init__(self, position = (0,0,0), texture = grass_texture):
         super().__init__(
@@ -169,5 +177,7 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 # pendulum()
+
+inventory = Inventory()
 
 app.run()
