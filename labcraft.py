@@ -42,7 +42,7 @@ def update():
     if held_keys['5']: block_pick = 5
     if held_keys['6']: block_pick = 6
  
-
+    if held_keys['escape']: quit()
     
 
     if debug == True:
