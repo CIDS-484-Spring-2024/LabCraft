@@ -43,6 +43,14 @@ def update():
     if held_keys['6']: block_pick = 6
  
     if held_keys['escape']: quit()
+
+    # disable the player FirstPersonController(), to regain control of mouse cursor
+    # uhmmm yyyes?... kinda works?
+    # but there's like a 1 frame flash of black screen? kinda jarring
+    # and when you switch back to enabled, the camera jump cuts to where the mouse is
+    # ^add to journal^
+    if held_keys['c']: player.enabled = False
+    if held_keys['v']: player.enabled = True
     
 
     if debug == True:
@@ -176,8 +184,7 @@ terrainGen()
 player = FirstPersonController()
 sky = Sky()
 hand = Hand()
-# pendulum()
 
-inventory = Inventory()
+#inventory = Inventory()
 
 app.run()
