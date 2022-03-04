@@ -26,6 +26,7 @@ window.exit_button.visible = True
 
 debug = False
 
+
 def update():
     global block_pick
     global debug
@@ -48,7 +49,7 @@ def update():
     # uhmmm yyyes?... kinda works?
     # but there's like a 1 frame flash of black screen? kinda jarring
     # and when you switch back to enabled, the camera jump cuts to where the mouse is
-    # ^add to journal^
+    # ^add to journal^ Feb 18 [12:08am]
     if held_keys['c']: player.enabled = False
     if held_keys['v']: player.enabled = True
     
@@ -67,12 +68,20 @@ def update():
         player.x = 1
         player.z = 1
 
+
 class Inventory(Entity):
     def __init__(self):
         super().__init__(
             parent = camera.ui,
-            model = 'quad'
+            model = 'quad',
+            scale = (.5, .8),
+            position = (0,0),
+            texture = 'white_cube',
+            texture_scale = (5,8),
+            color = color.dark_gray
         )
+
+        self.item_parent = Entity(parent=self, scale=(1/5,1/8))
 
 
 class Voxel(Button):
@@ -101,6 +110,7 @@ class Voxel(Button):
                 punch_sound.play()
                 destroy(self)
 
+
 class Sky(Entity):
     def __init__(self):
         super().__init__(
@@ -109,6 +119,7 @@ class Sky(Entity):
             texture = sky_texture,
             scale = 150,
             double_sided = True)
+
 
 class Hand(Entity):
     def __init__(self):
@@ -149,7 +160,6 @@ class pendulum(Button):
             destroy(self)
           
     
-
 class solarSystem(Button):
     def __init__(self, position = (0,0,0), texture = sun_texture):
         super().__init__(
@@ -185,6 +195,7 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
-#inventory = Inventory()
+inventory = Inventory()
+item = Button(parent=inventory.item_parent, origin=(0,.5), color=color.red, position=(0,0))
 
 app.run()
