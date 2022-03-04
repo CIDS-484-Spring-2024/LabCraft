@@ -33,6 +33,7 @@ debug = False
 
 def update():
     global block_pick
+    global game_state
     global debug
 
     if held_keys['left mouse'] or held_keys['right mouse']:
@@ -47,6 +48,7 @@ def update():
     if held_keys['5']: block_pick = 5
     if held_keys['6']: block_pick = 6
  
+
     """ if held_keys['escape']: 
         if game_state == 1:
             quit()
@@ -64,11 +66,13 @@ def update():
     # and when you switch back to enabled, the camera jump cuts to where the mouse is
     # ^add to journal^ Feb 18 [12:08am]
     if held_keys['e']:
-        player.enabled = False
-        inventory.enabled = True
+        game_state = 2
+        """ player.enabled = False
+        inventory.enabled = True """
     if held_keys['q']:
-        player.enabled = True
-        inventory.enabled = False
+        game_state = 1
+        """ player.enabled = True
+        inventory.enabled = False """
 
     """ if held_keys['e']:
         game_state = 2 """
@@ -76,12 +80,14 @@ def update():
     # [] TODO:  make statechanges thingy for 'paused'
     # turn off ability to interact with the world
     # move arm visually on top of menu, to act like it's a phone(?)
-    """ if game_state == 1:
+    if game_state == 1:
         player.enabled = True
+        inventory.enabled = False
     
     if game_state == 2:
         player.enabled = False
- """
+        inventory.enabled = True
+
 
     if debug == True:
         print(player.position.y)
