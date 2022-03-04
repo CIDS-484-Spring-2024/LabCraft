@@ -20,12 +20,16 @@ pendulum_texture = load_texture('assets/mc_brick.png')
 
 punch_sound   = Audio('assets/punch_sound',loop = False, autoplay = False)
 block_pick = 1
+game_state = 1 
+# {1: active gameplay}
+# {2: inventory menu screen}
 
 window.fps_counter.enabled = True
 window.exit_button.visible = True
 
 debug = False
 
+#txt = Text(text="test", parent = camera.ui, x = 100, y = 100)
 
 def update():
     global block_pick
@@ -43,7 +47,15 @@ def update():
     if held_keys['5']: block_pick = 5
     if held_keys['6']: block_pick = 6
  
-    if held_keys['escape']: quit()
+    """ if held_keys['escape']: 
+        if game_state == 1:
+            quit()
+        elif game_state == 2:
+            game_state = 1
+         """
+
+    if held_keys['escape']: 
+        quit()
 
 
     # disable the player FirstPersonController(), to regain control of mouse cursor
@@ -51,13 +63,25 @@ def update():
     # but there's like a 1 frame flash of black screen? kinda jarring
     # and when you switch back to enabled, the camera jump cuts to where the mouse is
     # ^add to journal^ Feb 18 [12:08am]
-    if held_keys['c']: player.enabled = False
-    if held_keys['v']: player.enabled = True
+    if held_keys['e']:
+        player.enabled = False
+        inventory.enabled = True
+    if held_keys['q']:
+        player.enabled = True
+        inventory.enabled = False
+
+    """ if held_keys['e']:
+        game_state = 2 """
 
     # [] TODO:  make statechanges thingy for 'paused'
     # turn off ability to interact with the world
     # move arm visually on top of menu, to act like it's a phone(?)
+    """ if game_state == 1:
+        player.enabled = True
     
+    if game_state == 2:
+        player.enabled = False
+ """
 
     if debug == True:
         print(player.position.y)
@@ -75,7 +99,7 @@ def update():
 
 
 class Inventory(Entity):
-    def __init__(self):
+    def __init__(self, grid_x, grid_y):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
@@ -83,11 +107,20 @@ class Inventory(Entity):
             origin = (-.5, .5),
             position = (-.3,.4),
             texture = 'white_cube',
-            texture_scale = (5,8),
+            texture_scale = (grid_x, grid_y),
             color = color.dark_gray
         )
 
         self.item_parent = Entity(parent=self, scale=(1/5,1/8))
+
+    def check_if_full(self):
+        taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
+        if taken_spots.len() >= grid_x * grid_y:
+            #txt.text = 'inventory full!'
+            return True
+        else:
+            #txt.text = 'inventory NOT full!'
+            return False
 
     def find_free_spot(self):
         taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
@@ -222,23 +255,25 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
-inventory = Inventory()
+inventory = Inventory(5, 8)
 #item = Button(parent=inventory.item_parent, origin=(0,.5), color=color.red, position=(0,0))
 #inventory.append('test item1')
 #inventory.append('test item2')
 
 def add_item():
+    """ if inventory.check_if_full == False:
+        inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword'))) """
     inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword')))
 
-for i in range(7):
-    add_item()
+""" for i in range(7):
+    add_item() """
 
 add_item_button = Button(
     scale = (.1,.1),
     x = -.5,
     color = color.lime.tint(-.25),
     text = '+',
-    tooltip = Tooltip('Add radnom item'),
+    tooltip = Tooltip('Add random item'),
     on_click = add_item
     )
 
