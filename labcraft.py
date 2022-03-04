@@ -97,14 +97,18 @@ class Inventory(Entity):
                     return (x,-y)
 
     def append(self, item):
-        Button(
+        icon = Button(
             parent = inventory.item_parent,
             model = 'quad',
+            texture = item,
+            color = color.white,
             origin = (-.5,.5),
-            color = color.random_color(),
             position = self.find_free_spot(),
             z = -.1
         )
+        name = item.replace('_', ' ').title()
+        icon.tooltip = Tooltip(name)
+        icon.tooltip.background.color = color.color(0,0,0,.8)
 
 
 class Voxel(Button):
@@ -224,7 +228,7 @@ inventory = Inventory()
 #inventory.append('test item2')
 
 def add_item():
-    inventory.append(random.choice(('dirt', 'sword', 'pickaxe', 'oak_wood', 'coal')))
+    inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword')))
 
 for i in range(7):
     add_item()
