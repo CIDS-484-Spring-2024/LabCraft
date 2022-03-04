@@ -60,6 +60,9 @@ def update():
         quit()
 
 
+
+    # = Game States =
+
     # disable the player FirstPersonController(), to regain control of mouse cursor
     # uhmmm yyyes?... kinda works?
     # but there's like a 1 frame flash of black screen? kinda jarring
@@ -77,16 +80,19 @@ def update():
     """ if held_keys['e']:
         game_state = 2 """
 
-    # [] TODO:  make statechanges thingy for 'paused'
+
+    # [x] TODO:  make statechanges thingy for 'paused'
     # turn off ability to interact with the world
     # move arm visually on top of menu, to act like it's a phone(?)
     if game_state == 1:
         player.enabled = True
         inventory.enabled = False
+        #voxel.functional = True
     
     if game_state == 2:
         player.enabled = False
         inventory.enabled = True
+        #voxel.functional = False
 
 
     if debug == True:
@@ -103,6 +109,8 @@ def update():
         player.x = 1
         player.z = 1
 
+
+# = Class Declarations =
 
 class Inventory(Entity):
     def __init__(self, grid_x, grid_y):
@@ -159,11 +167,13 @@ class Voxel(Button):
             origin_y = 0.5,
             texture = texture,
             color = color.color(0,0,random.uniform(0.9,1)),
-            scale = 0.5)
-
+            scale = 0.5) #, functional = True
 
     def input(self,key):
-        if self.hovered:
+        # if the current block is being hovered on by the mouse
+        # and the game state is the active gameplay
+        # then build/destroy blocks
+        if self.hovered and game_state == 1: 
             if key == 'left mouse down':
                 punch_sound.play()
                 if block_pick == 1: voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture)
@@ -195,7 +205,7 @@ class Hand(Entity):
             texture = arm_texture,
             scale = 0.2,
             rotation = Vec3(150,-10,0),
-            position = Vec2(0.4,-0.6))
+            position = Vec2(0.4,-0.6)),
 
     def active(self):
         self.position = Vec2(0.3,-0.5)
