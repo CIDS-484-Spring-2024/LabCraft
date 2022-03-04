@@ -222,8 +222,21 @@ inventory = Inventory()
 #item = Button(parent=inventory.item_parent, origin=(0,.5), color=color.red, position=(0,0))
 #inventory.append('test item1')
 #inventory.append('test item2')
+
+def add_item():
+    inventory.append(random.choice(('dirt', 'sword', 'pickaxe', 'oak_wood', 'coal')))
+
 for i in range(7):
-    inventory.append('test item')
+    add_item()
+
+add_item_button = Button(
+    scale = (.1,.1),
+    x = -.5,
+    color = color.lime.tint(-.25),
+    text = '+',
+    tooltip = Tooltip('Add radnom item'),
+    on_click = add_item
+    )
 
 
 app.run()
