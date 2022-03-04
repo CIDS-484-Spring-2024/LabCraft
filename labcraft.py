@@ -45,6 +45,7 @@ def update():
  
     if held_keys['escape']: quit()
 
+
     # disable the player FirstPersonController(), to regain control of mouse cursor
     # uhmmm yyyes?... kinda works?
     # but there's like a 1 frame flash of black screen? kinda jarring
@@ -52,6 +53,10 @@ def update():
     # ^add to journal^ Feb 18 [12:08am]
     if held_keys['c']: player.enabled = False
     if held_keys['v']: player.enabled = True
+
+    # [] TODO:  make statechanges thingy for 'paused'
+    # turn off ability to interact with the world
+    # move arm visually on top of menu, to act like it's a phone(?)
     
 
     if debug == True:
@@ -75,13 +80,31 @@ class Inventory(Entity):
             parent = camera.ui,
             model = 'quad',
             scale = (.5, .8),
-            position = (0,0),
+            origin = (-.5, .5),
+            position = (-.3,.4),
             texture = 'white_cube',
             texture_scale = (5,8),
             color = color.dark_gray
         )
 
         self.item_parent = Entity(parent=self, scale=(1/5,1/8))
+
+    def find_free_spot(self):
+        taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
+        for y in range(8):
+            for x in range(5):
+                if not (x,-y) in taken_spots:
+                    return (x,-y)
+
+    def append(self, item):
+        Button(
+            parent = inventory.item_parent,
+            model = 'quad',
+            origin = (-.5,.5),
+            color = color.random_color(),
+            position = self.find_free_spot(),
+            z = -.1
+        )
 
 
 class Voxel(Button):
@@ -196,6 +219,11 @@ sky = Sky()
 hand = Hand()
 
 inventory = Inventory()
-item = Button(parent=inventory.item_parent, origin=(0,.5), color=color.red, position=(0,0))
+#item = Button(parent=inventory.item_parent, origin=(0,.5), color=color.red, position=(0,0))
+#inventory.append('test item1')
+#inventory.append('test item2')
+for i in range(7):
+    inventory.append('test item')
+
 
 app.run()
