@@ -122,10 +122,12 @@ class Inventory(Entity):
             position = (-.3,.4),
             texture = 'white_cube',
             texture_scale = (grid_x, grid_y),
-            color = color.dark_gray
+            color = color.dark_gray,
         )
+        self.grid_x = grid_x
+        self.grid_y = grid_y
 
-        self.item_parent = Entity(parent=self, scale=(1/5,1/8))
+        self.item_parent = Entity(parent=self, scale=(1/grid_x, 1/grid_y))
 
     def check_if_full(self):
         taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
@@ -138,8 +140,8 @@ class Inventory(Entity):
 
     def find_free_spot(self):
         taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
-        for y in range(8):
-            for x in range(5):
+        for y in range(self.grid_y):
+            for x in range(self.grid_y):
                 if not (x,-y) in taken_spots:
                     return (x,-y)
 
@@ -167,9 +169,9 @@ class Inventory(Entity):
             icon.z += .01
 
             '''if outside, return to original position'''
-            if icon.x < 0 or icon.x >= 1 or icon.y > 0 or icon.y <= -1:
+            """ if icon.x < 0 or icon.x >= 1 or icon.y > 0 or icon.y <= -1:
                 icon.position = (icon.org_pos)
-                return
+                return """
 
             '''if the spot is taken, swap positions'''
             for c in self.children:
@@ -307,8 +309,8 @@ def add_item():
         inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword'))) """
     inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword')))
 
-""" for i in range(7):
-    add_item() """
+for i in range(7):
+    add_item()
 
 add_item_button = Button(
     scale = (.1,.1),
