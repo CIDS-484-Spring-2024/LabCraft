@@ -144,7 +144,7 @@ class Inventory(Entity):
                     return (x,-y)
 
     def append(self, item):
-        icon = Button(
+        icon = Draggable(
             parent = inventory.item_parent,
             model = 'quad',
             texture = item,
@@ -156,6 +156,32 @@ class Inventory(Entity):
         name = item.replace('_', ' ').title()
         icon.tooltip = Tooltip(name)
         icon.tooltip.background.color = color.color(0,0,0,.8)
+
+        def drag():
+            icon.org_pos = (icon.x, icon.y)
+            icon.z -= .01
+
+        def drop():
+            icon.x = int(icon.x)
+            icon.y = int(icon.y)
+            icon.z += .01
+
+            '''if outside, return to original position'''
+            if icon.x < 0 or icon.x >= 1 or icon.y > 0 or icon.y <= -1:
+                icon.position = (icon.org_pos)
+                return
+
+            '''if the spot is taken, swap positions'''
+            for c in self.children:
+                if c == icon:
+                    continue
+                
+                if c.x == icon.x and c.y == icon.y:
+                    print('swap positions')
+                    c.position = icon.org_pos
+
+        icon.drag = drag
+        icon.drop = drop
 
 
 class Voxel(Button):
