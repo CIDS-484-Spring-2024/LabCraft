@@ -146,7 +146,7 @@ class Inventory(Entity):
     def find_free_spot(self):
         taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
         for y in range(self.grid_y):
-            for x in range(self.grid_y):
+            for x in range(self.grid_x):
                 if not (x,-y) in taken_spots:
                     return (x,-y)
 
