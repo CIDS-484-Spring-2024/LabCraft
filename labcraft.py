@@ -18,7 +18,7 @@ mc_brick      = load_texture('assets/mc_brick.png')
 sun_texture   = load_texture('assets/sun.png')
 pendulum_texture = load_texture('assets/mc_brick.png')
 
-punch_sound   = Audio('assets/punch_sound',loop = False, autoplay = False)
+punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 block_pick = 1
 game_state = 1 
 # {1: active gameplay}
@@ -27,7 +27,7 @@ game_state = 1
 window.fps_counter.enabled = True
 window.exit_button.visible = True
 
-debug = False
+debug = True
 
 #txt = Text(text="test", parent = camera.ui, x = 100, y = 100)
 
@@ -95,8 +95,8 @@ def update():
         #voxel.functional = False
 
 
-    if debug == True:
-        print(player.position.y)
+    """ if debug == True:
+        print(player.position.y) """
 
     
     # if player falls through the map, return to starting point.
@@ -129,7 +129,10 @@ class Inventory(Entity):
         self.grid_x = grid_x
         self.grid_y = grid_y
 
-        self.item_parent = Entity(parent=self, scale=(1/grid_x, 1/grid_y))
+        self.item_parent = Entity(
+            parent=self, 
+            scale=(1/self.grid_x, 1/self.grid_y)
+        )
 
     """ def check_if_full(self):
         taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
@@ -166,8 +169,10 @@ class Inventory(Entity):
             #icon.z -= .01
 
         def drop():
-            icon.x = int(icon.x)
-            icon.y = int(icon.y)
+            # from center origin of icon, round to nearest int
+            # so that it drops/snaps the icon to the nearest grid space
+            icon.x = int(icon.x + 0.5)
+            icon.y = int(icon.y - 0.5)
             #icon.z += .01
 
             '''if outside, return to original position'''
@@ -309,19 +314,21 @@ inventory = Inventory(5, 8)
 def add_item():
     """ if inventory.check_if_full == False:
         inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword'))) """
-    inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword')))
+    #inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword')))
+    inventory.append('grass_texture')
 
 for i in range(7):
     add_item()
 
-add_item_button = Button(
-    scale = (.1,.1),
-    x = -.5,
-    color = color.lime.tint(-.25),
-    text = '+',
-    tooltip = Tooltip('Add random item'),
-    on_click = add_item
-    )
+if debug:
+    add_item_button = Button(
+        scale = (.1,.1),
+        x = -.5,
+        color = color.lime.tint(-.25),
+        text = '+',
+        tooltip = Tooltip('Add random item'),
+        on_click = add_item
+        )
 
 
 app.run()
