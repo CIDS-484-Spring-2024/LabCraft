@@ -109,6 +109,8 @@ def update():
         player.x = 1
         player.z = 1
 
+    inventory.get_position()
+
 
 # = Class Declarations =
 
@@ -129,14 +131,14 @@ class Inventory(Entity):
 
         self.item_parent = Entity(parent=self, scale=(1/grid_x, 1/grid_y))
 
-    def check_if_full(self):
+    """ def check_if_full(self):
         taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
         if taken_spots.len() >= grid_x * grid_y:
             #txt.text = 'inventory full!'
             return True
         else:
             #txt.text = 'inventory NOT full!'
-            return False
+            return False """
 
     def find_free_spot(self):
         taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
@@ -161,17 +163,17 @@ class Inventory(Entity):
 
         def drag():
             icon.org_pos = (icon.x, icon.y)
-            icon.z -= .01
+            #icon.z -= .01
 
         def drop():
             icon.x = int(icon.x)
             icon.y = int(icon.y)
-            icon.z += .01
+            #icon.z += .01
 
             '''if outside, return to original position'''
-            """ if icon.x < 0 or icon.x >= 1 or icon.y > 0 or icon.y <= -1:
+            if icon.x < 0 or icon.x >= self.grid_x or icon.y > 0 or icon.y <= -self.grid_y:
                 icon.position = (icon.org_pos)
-                return """
+                return
 
             '''if the spot is taken, swap positions'''
             for c in self.children:
