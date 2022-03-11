@@ -119,8 +119,8 @@ class Inventory(Entity):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
-            scale = (.5, .8),
-            origin = (-.5, .5),
+            scale = (grid_x/10, grid_y/10), # e.g. 5 x 8 grid will have scale = (.5, .8)
+            origin = (-.5, .5), 
             position = (-.3,.4),
             texture = 'white_cube',
             texture_scale = (grid_x, grid_y),
@@ -306,7 +306,7 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
-inventory = Inventory(5, 8)
+inventory = Inventory(10, 1)
 #item = Button(parent=inventory.item_parent, origin=(0,.5), color=color.red, position=(0,0))
 #inventory.append('test item1')
 #inventory.append('test item2')
@@ -315,7 +315,7 @@ def add_item():
     """ if inventory.check_if_full == False:
         inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword'))) """
     #inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword')))
-    inventory.append('grass_texture')
+    inventory.append(grass_texture)
 
 for i in range(7):
     add_item()
