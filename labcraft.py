@@ -114,24 +114,43 @@ def update():
 
 # = Class Declarations =
 
+class Hotbar(Entity):
+    def __init__(self):
+        super().__init__(
+            parent = camera.ui,
+            model = 'quad',
+            scale = (10/10, 1/10),
+            origin = (-.5, .5),
+            position = (-.5, -.4),
+            texture = 'white_cube',
+            texture_scale = (10, 1),
+            color = color.dark_gray
+        )
+
+        self.item_parent = Entity(
+            parent = self,
+            scale = (1/10, 1/1)
+        )
+
+
 class Inventory(Entity):
-    def __init__(self, grid_x, grid_y):
+    def __init__(self, grid_x, grid_y, x, y, hotbar):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
             scale = (grid_x/10, grid_y/10), # e.g. 5 x 8 grid will have scale = (.5, .8)
             origin = (-.5, .5), 
-            position = (-.3,.4),
+            position = (x, y),
             texture = 'white_cube',
             texture_scale = (grid_x, grid_y),
-            color = color.dark_gray,
+            color = color.dark_gray
         )
         self.grid_x = grid_x
         self.grid_y = grid_y
 
         self.item_parent = Entity(
-            parent=self, 
-            scale=(1/self.grid_x, 1/self.grid_y)
+            parent = self, 
+            scale = (1/self.grid_x, 1/self.grid_y)
         )
 
     """ def check_if_full(self):
@@ -154,7 +173,7 @@ class Inventory(Entity):
         icon = Draggable(
             parent = inventory.item_parent,
             model = 'quad',
-            texture = item,
+            texture = grass_texture,
             color = color.white,
             origin = (-.5,.5),
             position = self.find_free_spot(),
@@ -306,16 +325,15 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
-inventory = Inventory(10, 1)
-#item = Button(parent=inventory.item_parent, origin=(0,.5), color=color.red, position=(0,0))
-#inventory.append('test item1')
-#inventory.append('test item2')
+
+hotbar = Hotbar()
+inventory = Inventory(6, 8, -.2, .4, hotbar)
 
 def add_item():
     """ if inventory.check_if_full == False:
         inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword'))) """
     #inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword')))
-    inventory.append(grass_texture)
+    inventory.append('grass_texture')
 
 for i in range(7):
     add_item()
