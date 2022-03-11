@@ -18,6 +18,8 @@ mc_brick      = load_texture('assets/mc_brick.png')
 sun_texture   = load_texture('assets/sun.png')
 pendulum_texture = load_texture('assets/mc_brick.png')
 
+grass_icon_texture = load_texture('assets/grass_icon.png')
+
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 block_pick = 1
 game_state = 1 
@@ -153,15 +155,6 @@ class Inventory(Entity):
             scale = (1/self.grid_x, 1/self.grid_y)
         )
 
-    """ def check_if_full(self):
-        taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
-        if taken_spots.len() >= grid_x * grid_y:
-            #txt.text = 'inventory full!'
-            return True
-        else:
-            #txt.text = 'inventory NOT full!'
-            return False """
-
     def find_free_spot(self):
         taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
         for y in range(self.grid_y):
@@ -173,7 +166,9 @@ class Inventory(Entity):
         icon = Draggable(
             parent = inventory.item_parent,
             model = 'quad',
-            texture = grass_texture,
+            texture = grass_icon_texture,
+            #texture_scale = (.25, .25),
+            #texture_offset = (.37,.25),
             color = color.white,
             origin = (-.5,.5),
             position = self.find_free_spot(),
@@ -221,7 +216,7 @@ class Voxel(Button):
             origin_y = 0.5,
             texture = texture,
             color = color.color(0,0,random.uniform(0.9,1)),
-            scale = 0.5) #, functional = True
+            scale = 0.5)
 
     def input(self,key):
         # if the current block is being hovered on by the mouse
