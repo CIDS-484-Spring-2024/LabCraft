@@ -116,7 +116,7 @@ def update():
 
 # = Class Declarations =
 
-class Hotbar(Entity):
+""" class Hotbar(Entity):
     def __init__(self):
         super().__init__(
             parent = camera.ui,
@@ -132,11 +132,11 @@ class Hotbar(Entity):
         self.item_parent = Entity(
             parent = self,
             scale = (1/10, 1/1)
-        )
+        ) """
 
 
 class Inventory(Entity):
-    def __init__(self, grid_x, grid_y, x, y, hotbar):
+    def __init__(self, grid_x, grid_y, x, y):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
@@ -321,8 +321,8 @@ sky = Sky()
 hand = Hand()
 
 
-hotbar = Hotbar()
-inventory = Inventory(6, 8, -.2, .4, hotbar)
+#hotbar = Hotbar()
+inventory = Inventory(10, 8, -.5, .4)#, hotbar)
 
 def add_item():
     """ if inventory.check_if_full == False:
