@@ -56,21 +56,13 @@ def update():
 
 
 
-    # = Game States =
+    # === Game States ===
 
-    # disable the player FirstPersonController(), to regain control of mouse cursor
-    # uhmmm yyyes?... kinda works?
-    # but there's like a 1 frame flash of black screen? kinda jarring
-    # and when you switch back to enabled, the camera jump cuts to where the mouse is
-    # ^add to journal^ Feb 18 [12:08am]
     if held_keys['e']:
         game_state = 2
 
     if held_keys['q']:
         game_state = 1
-
-
-
 
     # move arm visually on top of menu, to act like it's a phone(?)
     if game_state == 1: # main game state
@@ -106,8 +98,53 @@ class MenuBG(Entity):
     def __init__(self):
         super().__init__(
             parent = camera.ui,
-            model = 'quad'
+            model = 'quad',
+            
+            # 1.00 => 10 cols
+            # 0.8 => 8 rows
+            # the extra 0.06 is used for the padding of the menu grid
+            scale = (1.06, 0.86), 
+            #texture = load_texture(),
+            color = color.color(0,0,0,.8) # (hue, saturation, value, alpha)
         )
+
+class InvItem(Draggable):
+    def __init__(self, container):
+        super().__init__(
+            parent = container,
+            model = 'quad',
+            color = color.white,
+
+            # The grid has 10 columns, so each item should be 1/10 of the size of the grid
+            # and we multiply it by a small amount to make the item slightly smaller 
+            # than the inventory slot to give it a padding.
+            # And similarly with the scale_y, there's 8 rows so each is 1/8 of the size
+            scale_x = 1 / (container.texture_scale[0] * 1.2), 
+            scale_y = 1 / (container.texture_scale[1] * 1.2),
+        )
+
+    def drag(self):
+        print('drag')
+
+    def drop(self):
+        print(f'x: {self.x}')
+        print(f'y: {self.y}')
+
+class Grid(Entity):
+    def __init__(self):
+        super().__init__(
+            parent = camera.ui,
+            model = 'quad',
+            scale = (1.0, 0.8),
+            texture = 'white_cube', #load_texture(),
+            texture_scale = (10, 8),
+            color = color.color(0,0,0.25,.6),
+        )
+        self.add_new_item()
+
+    
+    def add_new_item(self):
+        InvItem(self)
 
 """ 
 class Hotbar(Entity):
@@ -302,11 +339,12 @@ class solarSystem(Button):
 
 
 
+# === Instantiation ===
+
 def terrainGen():
     for z in range(20):
         for x in range(20):
             voxel = Voxel(position = (x,0,z))
-
 
 
 terrainGen()
@@ -316,10 +354,8 @@ sky = Sky()
 hand = Hand()
 
 inventoryBG = MenuBG()
-
-
-
-
+inventoryGrid = Grid()
+#testItem = InvItem()
 
 """
 #hotbar = Hotbar()
