@@ -6,6 +6,7 @@ window.borderless = False
 
 app = Ursina()
 
+# block textures
 grass_texture = load_texture('assets/grass_block.png')
 stone_texture = load_texture('assets/stone_block.png')
 brick_texture = load_texture('assets/brick_block.png')
@@ -18,20 +19,20 @@ mc_brick      = load_texture('assets/mc_brick.png')
 sun_texture   = load_texture('assets/sun.png')
 pendulum_texture = load_texture('assets/mc_brick.png')
 
+# inventory menu icon textures
 grass_icon_texture = load_texture('assets/grass_icon.png')
 
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 block_pick = 1
-game_state = 1 
+
 # {1: active gameplay}
 # {2: inventory menu screen}
+game_state = 1 
 
 window.fps_counter.enabled = True
 window.exit_button.visible = True
 
 debug = True
-
-#txt = Text(text="test", parent = camera.ui, x = 100, y = 100)
 
 def update():
     global block_pick
@@ -49,14 +50,6 @@ def update():
     if held_keys['4']: block_pick = 4
     if held_keys['5']: block_pick = 5
     if held_keys['6']: block_pick = 6
- 
-
-    """ if held_keys['escape']: 
-        if game_state == 1:
-            quit()
-        elif game_state == 2:
-            game_state = 1
-         """
 
     if held_keys['escape']: 
         quit()
@@ -72,34 +65,27 @@ def update():
     # ^add to journal^ Feb 18 [12:08am]
     if held_keys['e']:
         game_state = 2
-        """ player.enabled = False
-        inventory.enabled = True """
+
     if held_keys['q']:
         game_state = 1
-        """ player.enabled = True
-        inventory.enabled = False """
-
-    """ if held_keys['e']:
-        game_state = 2 """
 
 
-    # [x] TODO:  make statechanges thingy for 'paused'
-    # turn off ability to interact with the world
+
+
     # move arm visually on top of menu, to act like it's a phone(?)
-    if game_state == 1:
+    if game_state == 1: # main game state
         player.enabled = True
-        inventory.enabled = False
-        #voxel.functional = True
+        #inventory.enabled = False
     
-    if game_state == 2:
+    if game_state == 2: # view inventory state
         player.enabled = False
-        inventory.enabled = True
-        #voxel.functional = False
+        #inventory.enabled = True
 
 
-    """ if debug == True:
-        print(player.position.y) """
-
+    """ 
+    if debug == True:
+        print(player.position.y) 
+    """
     
     # if player falls through the map, return to starting point.
     if player.position.y < -10:
@@ -111,12 +97,20 @@ def update():
         player.x = 1
         player.z = 1
 
-    inventory.get_position()
+    #inventory.get_position()
 
 
-# = Class Declarations =
+# === Class Declarations ===
 
-""" class Hotbar(Entity):
+class MenuBG(Entity):
+    def __init__(self):
+        super().__init__(
+            parent = camera.ui,
+            model = 'quad'
+        )
+
+""" 
+class Hotbar(Entity):
     def __init__(self):
         super().__init__(
             parent = camera.ui,
@@ -132,9 +126,10 @@ def update():
         self.item_parent = Entity(
             parent = self,
             scale = (1/10, 1/1)
-        ) """
+        ) 
+"""
 
-
+"""
 class Inventory(Entity):
     def __init__(self, grid_x, grid_y, x, y):
         super().__init__(
@@ -205,7 +200,7 @@ class Inventory(Entity):
 
         icon.drag = drag
         icon.drop = drop
-
+"""
 
 class Voxel(Button):
     def __init__(self, position = (0,0,0), texture = grass_texture):
@@ -320,14 +315,17 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
+inventoryBG = MenuBG()
 
+
+
+
+
+"""
 #hotbar = Hotbar()
 inventory = Inventory(10, 8, -.5, .4)#, hotbar)
 
 def add_item():
-    """ if inventory.check_if_full == False:
-        inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword'))) """
-    #inventory.append(random.choice(('bag', 'bow_arrow', 'gem', 'orb', 'sword')))
     inventory.append('grass_texture')
 
 for i in range(7):
@@ -342,6 +340,6 @@ if debug:
         tooltip = Tooltip('Add random item'),
         on_click = add_item
         )
-
+"""
 
 app.run()
