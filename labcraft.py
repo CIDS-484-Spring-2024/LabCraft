@@ -39,22 +39,6 @@ def update():
     global game_state
     global debug
 
-    if held_keys['left mouse'] or held_keys['right mouse']:
-        hand.active()
-    else:
-        hand.passive()
-
-    if held_keys['1']: block_pick = 1
-    if held_keys['2']: block_pick = 2
-    if held_keys['3']: block_pick = 3
-    if held_keys['4']: block_pick = 4
-    if held_keys['5']: block_pick = 5
-    if held_keys['6']: block_pick = 6
-
-    if held_keys['escape']: 
-        quit()
-
-
 
     # === Game States ===
 
@@ -68,10 +52,31 @@ def update():
     if game_state == 1: # main game state
         player.enabled = True
         #inventory.enabled = False
+
+        # animate the hand to move back and forth when clicked
+        if held_keys['left mouse'] or held_keys['right mouse']:
+            hand.active()
+        else:
+            hand.passive()
     
     if game_state == 2: # view inventory state
         player.enabled = False
         #inventory.enabled = True
+    
+
+    if held_keys['1']: block_pick = 1
+    if held_keys['2']: block_pick = 2
+    if held_keys['3']: block_pick = 3
+    if held_keys['4']: block_pick = 4
+    if held_keys['5']: block_pick = 5
+    if held_keys['6']: block_pick = 6
+
+    if held_keys['escape']: 
+        quit()
+
+
+
+    
 
 
     """ 
@@ -135,6 +140,8 @@ class Grid(Entity):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
+            origin = (-0.5, 0.5), # change origin of grid to top left
+            position = (-0.5, 0.4), # must be exactly half of the scale's (x, y)
             scale = (1.0, 0.8),
             texture = 'white_cube', #load_texture(),
             texture_scale = (10, 8),
