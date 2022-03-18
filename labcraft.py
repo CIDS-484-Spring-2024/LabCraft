@@ -203,8 +203,8 @@ class InvItem(Draggable):
             # 
             self.parent = self.hotbar # switch to be in the hotbar
 
-    def container_check(self):
-        
+    #def container_check(self):
+
 
     def overlap_check(self):
         for child in self.parent.children:
@@ -242,6 +242,8 @@ class Grid(Entity):
             texture_scale = (rows, cols),
             color = color.color(0,0,0.25,.6),
         )
+        self.rows = rows
+        self.cols = cols
 
         if not pos:
             # Must be exactly half of the scale's (x, y) from above
@@ -252,8 +254,6 @@ class Grid(Entity):
             self.x = pos[0]
             self.y = pos[1]
         
-
-
         #self.add_new_item() # add items to inventory on grid instantiation
     
     # def add_new_item(self):
@@ -265,13 +265,25 @@ class Grid(Entity):
     #     InvItem(self, sun_icon_texture, self.find_free_cell())
     #     InvItem(self, pendulum_icon_texture, self.find_free_cell())
     
-    def find_free_cell(self):
-        all_cells = [Vec2(x,y) for y in range(0,-8,-1) for x in range(0,10)] # ... https://youtu.be/hAl7oVJi7r0?t=2715 [45:15]
+    def get_all_cells(self):
+        all_cells = [Vec2(x,y) for y in range(0,-(self.cols),-1) for x in range(0,self.rows)]
+        return all_cells
+    
+    def get_taken_cells(self):
         taken_cells = [child.get_cell_pos() for child in self.children]
+        return taken_cells
+
+    def find_free_cell(self):
+        #all_cells = [Vec2(x,y) for y in range(0,-8,-1) for x in range(0,10)] # ... https://youtu.be/hAl7oVJi7r0?t=2715 [45:15]
+        #taken_cells = [child.get_cell_pos() for child in self.children]
+        all_cells = self.get_all_cells()
+        taken_cells = self.get_taken_cells()
 
         for cell in all_cells:
             if cell not in taken_cells:
                 return cell
+
+    
         
 """ 
 class Hotbar(Entity):
