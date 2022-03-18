@@ -51,6 +51,8 @@ def update():
     # move arm visually on top of menu, to act like it's a phone(?)
     if game_state == 1: # main game state
         player.enabled = True
+        inventoryBG.enabled = False
+        inventoryGrid.enabled = False
         #inventory.enabled = False
 
         # animate the hand to move back and forth when clicked
@@ -61,9 +63,10 @@ def update():
     
     if game_state == 2: # view inventory state
         player.enabled = False
+        inventoryBG.enabled = True
+        inventoryGrid.enabled = True
         #inventory.enabled = True
     
-
     if held_keys['1']: block_pick = 1
     if held_keys['2']: block_pick = 2
     if held_keys['3']: block_pick = 3
@@ -73,11 +76,6 @@ def update():
 
     if held_keys['escape']: 
         quit()
-
-
-
-    
-
 
     """ 
     if debug == True:
@@ -94,7 +92,17 @@ def update():
         player.x = 1
         player.z = 1
 
-    #inventory.get_position()
+""" 
+# input handler?
+def input(key):
+    if key == '1': block_pick = 1
+    if key == '2': block_pick = 2
+    if key == '3': block_pick = 3
+    if key == '4': block_pick = 4
+    if key == '5': block_pick = 5
+    if key == '6': block_pick = 6 
+"""
+
 
 
 # === Class Declarations ===
