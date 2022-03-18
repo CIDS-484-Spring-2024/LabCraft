@@ -100,25 +100,25 @@ def update():
 # === Class Declarations ===
 
 class MenuBG(Entity):
-    def __init__(self):
+    def __init__(self, rows, cols):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
             
-            # 1.00 => 10 cols
-            # 0.8 => 8 rows
-            # the extra 0.06 is used for the padding of the menu grid
-            scale = (1.06, 0.86), 
+            # Divide rows/cols by 10, e.g. 10 cols => 1.00, 8 rows => 0.8
+            # The extra 0.06 is used for the padding of the menu grid
+            scale = ((rows / 10) + 0.06, (cols / 10) + 0.06), 
             #texture = load_texture(),
             color = color.color(0,0,0,.8) # (hue, saturation, value, alpha)
         )
 
 class InvItem(Draggable):
-    def __init__(self, container):
+    def __init__(self, container, iconTexture):
         super().__init__(
             parent = container,
             model = 'quad',
             color = color.white,
+            texture = iconTexture,
 
             # The grid has 10 columns, so each item should be 1/10 of the size of the grid
             # and we multiply it by a small amount to make the item slightly smaller 
@@ -140,43 +140,53 @@ class InvItem(Draggable):
         print(f'x: {self.x}')
         print(f'y: {self.y}')
 
+        # Calculation explanation:
+        #
         # "(self.x + self.scale_x/2)" 
         # Take the current item's x position (origin: top left), and add half of its width, 
         # so you get the coordinate of its center.
         #
-        # "int((...) * 10)"
+        # "self.parent.texture_scale[0]"
+        # This is basically the number of rows that were passed in as arguments for its container
+        # (e.g. the grid has 10 rows). And then, "self.parent.texture_scale[1]"" would just be the num of cols.
+        # 
+        # "int((...) * self.parent.texture_scale[0])"
         # Ursina gives coordinates from 0 (left edge) to 1 (right edge)
         # so we temporarily make the coordinate larger, multiplying by the number of rows 
         # for the x coord (and cols for the y coord) so we can use truncate extra digits
         # and get a nice, clean number using the int().
         #
-        # "(...) / 10"
+        # "(...) / self.parent.texture_scale[0]"
         # Then, we turn it back into a usuable Ursina coordinate by
         # dividing what we multiplied from the earlier step.
-        self.x = int((self.x + self.scale_x/2) * 10) / 10
+        self.x = int((self.x + self.scale_x/2) * self.parent.texture_scale[0]) / self.parent.texture_scale[0]
 
         # Ursina coordinate system has an inverted y-axis so we subtract in this case
-        self.y = int((self.y - self.scale_y/2) * 8) / 8
+        self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1]
 
 
 
 class Grid(Entity):
-    def __init__(self):
+    def __init__(self, rows, cols):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
             origin = (-0.5, 0.5), # change origin of grid to top left
-            position = (-0.5, 0.4), # must be exactly half of the scale's (x, y)
-            scale = (1.0, 0.8),
+            scale = (rows / 10, cols / 10), # must divide num of rows/cols by 10, e.g. 10 rows / 10 = 1.0, 8 cols / 10 = 0.8
+            
+            # Must be exactly half of the scale's (x, y) from above
+            # e.g. scale: (1.0, 0.8), position: (-0.5, 0.4)
+            # x coord is negative because-
+            position = (-((rows / 10) / 2), (cols / 10) / 2),
+            
             texture = 'white_cube', #load_texture(),
-            texture_scale = (10, 8),
+            texture_scale = (rows, cols),
             color = color.color(0,0,0.25,.6),
         )
-        self.add_new_item()
-
+        self.add_new_item() # add items to inventory on grid instantiation
     
     def add_new_item(self):
-        InvItem(self)
+        InvItem(self, grass_icon_texture)
 
 """ 
 class Hotbar(Entity):
@@ -385,8 +395,8 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
-inventoryBG = MenuBG()
-inventoryGrid = Grid()
+inventoryBG = MenuBG(10, 8)
+inventoryGrid = Grid(10, 8)
 #testItem = InvItem()
 
 """
