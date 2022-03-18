@@ -115,7 +115,7 @@ def input(key):
 # === Class Declarations ===
 
 class MenuBG(Entity):
-    def __init__(self, rows, cols):
+    def __init__(self, rows, cols, pos):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
@@ -126,11 +126,19 @@ class MenuBG(Entity):
             #texture = load_texture(),
             color = color.color(0,0,0,.8) # (hue, saturation, value, alpha)
         )
+        if not pos:
+            self.x = 0
+            self.y = 0
+        else:
+            self.x = pos[0]
+            self.y = pos[1]
+
+
 
 class InvItem(Draggable):
-    def __init__(self, container, type, pos):
+    def __init__(self, inventory, hotbar, type, pos):
         super().__init__(
-            parent = container,
+            parent = inventory,
             model = 'quad',
             color = color.white,
             texture = type,
@@ -139,17 +147,19 @@ class InvItem(Draggable):
             # and we multiply it by a small amount to make the item slightly smaller 
             # than the inventory slot to give it a padding.
             # And similarly with the scale_y, there's 8 rows so each is 1/8 of the size
-            scale_x = 1 / (container.texture_scale[0] * 1.2), 
-            scale_y = 1 / (container.texture_scale[1] * 1.2),
+            scale_x = 1 / (inventory.texture_scale[0] * 1.2), 
+            scale_y = 1 / (inventory.texture_scale[1] * 1.2),
             
             # Change origin to top left, but account for padding by
             # taking what you multiplied above for the scale, and divide by 2
             # e.g. 1.2 / 2 = 0.6
             origin = (-0.6, 0.6), 
 
-            x = pos[0] * 1 / container.texture_scale[0],
-            y = pos[1] * 1 / container.texture_scale[1]
+            x = pos[0] * 1 / inventory.texture_scale[0],
+            y = pos[1] * 1 / inventory.texture_scale[1]
         )
+        self.inventory = inventory
+        self.hotbar = hotbar
 
     def drag(self):
         self.xy_pos = (self.x, self.y) # store current position
@@ -188,6 +198,14 @@ class InvItem(Draggable):
         # check for swapping
         self.overlap_check()
 
+        if self.parent == self.inventory:
+            # check if overlap empty spot in the hotbar
+            # 
+            self.parent = self.hotbar # switch to be in the hotbar
+
+    def container_check(self):
+        
+
     def overlap_check(self):
         for child in self.parent.children:
             if child.x == self.x and child.y == self.y:
@@ -214,32 +232,38 @@ class InvItem(Draggable):
         return Vec2(x,y)
 
 class Grid(Entity):
-    def __init__(self, rows, cols):
+    def __init__(self, rows, cols, pos):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
             origin = (-0.5, 0.5), # change origin of grid to top left
             scale = (rows / 10, cols / 10), # must divide num of rows/cols by 10, e.g. 10 rows / 10 = 1.0, 8 cols / 10 = 0.8
-            
-            # Must be exactly half of the scale's (x, y) from above
-            # e.g. scale: (1.0, 0.8), position: (-0.5, 0.4)
-            # x coord is negative because-
-            position = (-((rows / 10) / 2), (cols / 10) / 2),
-            
             texture = 'white_cube', #load_texture(),
             texture_scale = (rows, cols),
             color = color.color(0,0,0.25,.6),
         )
-        self.add_new_item() # add items to inventory on grid instantiation
+
+        if not pos:
+            # Must be exactly half of the scale's (x, y) from above
+            # e.g. scale: (1.0, 0.8), position: (-0.5, 0.4)
+            # x coord is negative because-
+            self.position = (-((rows / 10) / 2), (cols / 10) / 2)
+        else:
+            self.x = pos[0]
+            self.y = pos[1]
+        
+
+
+        #self.add_new_item() # add items to inventory on grid instantiation
     
-    def add_new_item(self):
-        #pos = self.find_free_cell() #(0,0) # index coordinate, e.g. (2, -4) is 2 from the left and 4 from the top
-        InvItem(self, grass_icon_texture, self.find_free_cell())
-        InvItem(self, stone_icon_texture, self.find_free_cell())
-        InvItem(self, brick_icon_texture, self.find_free_cell())
-        InvItem(self, dirt_icon_texture, self.find_free_cell())
-        InvItem(self, sun_icon_texture, self.find_free_cell())
-        InvItem(self, pendulum_icon_texture, self.find_free_cell())
+    # def add_new_item(self):
+    #     #pos = self.find_free_cell() #(0,0) # index coordinate, e.g. (2, -4) is 2 from the left and 4 from the top
+    #     InvItem(self, grass_icon_texture, self.find_free_cell())
+    #     InvItem(self, stone_icon_texture, self.find_free_cell())
+    #     InvItem(self, brick_icon_texture, self.find_free_cell())
+    #     InvItem(self, dirt_icon_texture, self.find_free_cell())
+    #     InvItem(self, sun_icon_texture, self.find_free_cell())
+    #     InvItem(self, pendulum_icon_texture, self.find_free_cell())
     
     def find_free_cell(self):
         all_cells = [Vec2(x,y) for y in range(0,-8,-1) for x in range(0,10)] # ... https://youtu.be/hAl7oVJi7r0?t=2715 [45:15]
@@ -249,9 +273,6 @@ class Grid(Entity):
             if cell not in taken_cells:
                 return cell
         
-
-
-
 """ 
 class Hotbar(Entity):
     def __init__(self):
@@ -459,29 +480,11 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
-inventory_BG = MenuBG(10, 8)
-inventory_grid = Grid(10, 8)
-#testItem = InvItem()
+inventory_BG = MenuBG(10, 7, False)
+inventory_grid = Grid(10, 7, False)
+hotbar_BG = MenuBG(10,1, (0,-.46))
+hotbar_grid = Grid(10,1, (-.5,-.4))
 
-"""
-#hotbar = Hotbar()
-inventory = Inventory(10, 8, -.5, .4)#, hotbar)
-
-def add_item():
-    inventory.append('grass_texture')
-
-for i in range(7):
-    add_item()
-
-if debug:
-    add_item_button = Button(
-        scale = (.1,.1),
-        x = -.5,
-        color = color.lime.tint(-.25),
-        text = '+',
-        tooltip = Tooltip('Add random item'),
-        on_click = add_item
-        )
-"""
+test_item1 = InvItem(inventory_grid, hotbar_grid, grass_icon_texture, inventory_grid.find_free_cell())
 
 app.run()
