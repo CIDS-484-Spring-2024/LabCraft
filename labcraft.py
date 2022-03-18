@@ -21,6 +21,7 @@ pendulum_texture = load_texture('assets/mc_brick.png')
 
 # inventory menu icon textures
 grass_icon_texture = load_texture('assets/grass_icon.png')
+stone_icon_texture = load_texture('assets/stone_icon.png')
 
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 block_pick = 1
@@ -186,6 +187,7 @@ class InvItem(Draggable):
                 else:
                     child.x = self.xy_pos[0]
                     child.y = self.xy_pos[1]
+                    print('swap!')
 
     def menu_constraint(self):
 
@@ -194,6 +196,7 @@ class InvItem(Draggable):
             # go back to stored position in self.xy_pos
             self.x = self.xy_pos[0]
             self.y = self.xy_pos[1]
+            print('out of bounds!')
 
 
 
@@ -218,6 +221,7 @@ class Grid(Entity):
     
     def add_new_item(self):
         InvItem(self, grass_icon_texture)
+        InvItem(self, stone_icon_texture)
 
 """ 
 class Hotbar(Entity):
