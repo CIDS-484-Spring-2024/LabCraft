@@ -58,8 +58,8 @@ def update():
     # move arm visually on top of menu, to act like it's a phone(?)
     if game_state == 1: # main game state
         player.enabled = True
-        inventoryBG.enabled = False
-        inventoryGrid.enabled = False
+        inventory_BG.enabled = False
+        inventory_grid.enabled = False
         #inventory.enabled = False
 
         # animate the hand to move back and forth when clicked
@@ -70,8 +70,8 @@ def update():
     
     if game_state == 2: # view inventory state
         player.enabled = False
-        inventoryBG.enabled = True
-        inventoryGrid.enabled = True
+        inventory_BG.enabled = True
+        inventory_grid.enabled = True
         #inventory.enabled = True
     
     if held_keys['1']: block_pick = 1
@@ -128,12 +128,12 @@ class MenuBG(Entity):
         )
 
 class InvItem(Draggable):
-    def __init__(self, container, iconTexture):
+    def __init__(self, container, type, pos):
         super().__init__(
             parent = container,
             model = 'quad',
             color = color.white,
-            texture = iconTexture,
+            texture = type,
 
             # The grid has 10 columns, so each item should be 1/10 of the size of the grid
             # and we multiply it by a small amount to make the item slightly smaller 
@@ -145,7 +145,10 @@ class InvItem(Draggable):
             # Change origin to top left, but account for padding by
             # taking what you multiplied above for the scale, and divide by 2
             # e.g. 1.2 / 2 = 0.6
-            origin = (-0.6, 0.6) 
+            origin = (-0.6, 0.6), 
+
+            x = pos[0] * 1 / container.texture_scale[0],
+            y = pos[1] * 1 / container.texture_scale[1]
         )
 
     def drag(self):
@@ -204,7 +207,11 @@ class InvItem(Draggable):
             self.y = self.xy_pos[1]
             print('out of bounds!')
 
-
+    def get_cell_pos(self):
+        # ... https://youtu.be/hAl7oVJi7r0?t=2904 [48:24]
+        x = int(self.x * self.parent.texture_scale[0])
+        y = int(self.y * self.parent.texture_scale[1])
+        return Vec2(x,y)
 
 class Grid(Entity):
     def __init__(self, rows, cols):
@@ -226,12 +233,24 @@ class Grid(Entity):
         self.add_new_item() # add items to inventory on grid instantiation
     
     def add_new_item(self):
-        InvItem(self, grass_icon_texture)
-        InvItem(self, stone_icon_texture)
-        InvItem(self, brick_icon_texture)
-        InvItem(self, dirt_icon_texture)
-        InvItem(self, sun_icon_texture)
-        InvItem(self, pendulum_icon_texture)
+        #pos = self.find_free_cell() #(0,0) # index coordinate, e.g. (2, -4) is 2 from the left and 4 from the top
+        InvItem(self, grass_icon_texture, self.find_free_cell())
+        InvItem(self, stone_icon_texture, self.find_free_cell())
+        InvItem(self, brick_icon_texture, self.find_free_cell())
+        InvItem(self, dirt_icon_texture, self.find_free_cell())
+        InvItem(self, sun_icon_texture, self.find_free_cell())
+        InvItem(self, pendulum_icon_texture, self.find_free_cell())
+    
+    def find_free_cell(self):
+        all_cells = [Vec2(x,y) for y in range(0,-8,-1) for x in range(0,10)] # ... https://youtu.be/hAl7oVJi7r0?t=2715 [45:15]
+        taken_cells = [child.get_cell_pos() for child in self.children]
+
+        for cell in all_cells:
+            if cell not in taken_cells:
+                return cell
+        
+
+
 
 """ 
 class Hotbar(Entity):
@@ -440,8 +459,8 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
-inventoryBG = MenuBG(10, 8)
-inventoryGrid = Grid(10, 8)
+inventory_BG = MenuBG(10, 8)
+inventory_grid = Grid(10, 8)
 #testItem = InvItem()
 
 """
