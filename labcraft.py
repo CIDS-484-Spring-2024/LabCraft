@@ -134,7 +134,7 @@ class InvItem(Draggable):
         )
 
     def drag(self):
-        print('drag')
+        self.xy_pos = (self.x, self.y) # store current position
 
     def drop(self):
         print(f'x: {self.x}')
@@ -163,6 +163,16 @@ class InvItem(Draggable):
 
         # Ursina coordinate system has an inverted y-axis so we subtract in this case
         self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1]
+
+        # check if outside of boundaries
+        self.menu_constraint()
+
+    def menu_constraint(self):
+        if self.x < 0 or self.x > 0.95 or self.y > 0 or self.y < -0.95:
+            
+            # go back to stored position in self.xy_pos
+            self.x = self.xy_pos[0]
+            self.y = self.xy_pos[1]
 
 
 
