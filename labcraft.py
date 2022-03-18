@@ -11,17 +11,23 @@ grass_texture = load_texture('assets/grass_block.png')
 stone_texture = load_texture('assets/stone_block.png')
 brick_texture = load_texture('assets/brick_block.png')
 dirt_texture  = load_texture('assets/dirt_block.png')
-sky_texture   = load_texture('assets/skybox.png')
-arm_texture   = load_texture('assets/arm_texture.png')
-osc_texture   = load_texture('assets/osc_block.png')
-earth_texture = load_texture('assets/earth_block.png')
-mc_brick      = load_texture('assets/mc_brick.png')
 sun_texture   = load_texture('assets/sun.png')
 pendulum_texture = load_texture('assets/mc_brick.png')
 
 # inventory menu icon textures
 grass_icon_texture = load_texture('assets/grass_icon.png')
 stone_icon_texture = load_texture('assets/stone_icon.png')
+brick_icon_texture = load_texture('assets/brick_icon.png')
+dirt_icon_texture = load_texture('assets/dirt_icon.png')
+sun_icon_texture = load_texture('assets/sun_icon.png')
+pendulum_icon_texture = load_texture('assets/mc_brick_icon.png')
+
+# other textures
+sky_texture   = load_texture('assets/skybox.png')
+arm_texture   = load_texture('assets/arm_texture.png')
+osc_texture   = load_texture('assets/osc_block.png')
+earth_texture = load_texture('assets/earth_block.png')
+mc_brick      = load_texture('assets/mc_brick.png')
 
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 block_pick = 1
@@ -222,6 +228,10 @@ class Grid(Entity):
     def add_new_item(self):
         InvItem(self, grass_icon_texture)
         InvItem(self, stone_icon_texture)
+        InvItem(self, brick_icon_texture)
+        InvItem(self, dirt_icon_texture)
+        InvItem(self, sun_icon_texture)
+        InvItem(self, pendulum_icon_texture)
 
 """ 
 class Hotbar(Entity):
