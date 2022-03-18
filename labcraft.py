@@ -126,6 +126,11 @@ class InvItem(Draggable):
             # And similarly with the scale_y, there's 8 rows so each is 1/8 of the size
             scale_x = 1 / (container.texture_scale[0] * 1.2), 
             scale_y = 1 / (container.texture_scale[1] * 1.2),
+            
+            # Change origin to top left, but account for padding by
+            # taking what you multiplied above for the scale, and divide by 2
+            # e.g. 1.2 / 2 = 0.6
+            origin = (-0.6, 0.6) 
         )
 
     def drag(self):
@@ -134,6 +139,26 @@ class InvItem(Draggable):
     def drop(self):
         print(f'x: {self.x}')
         print(f'y: {self.y}')
+
+        # "(self.x + self.scale_x/2)" 
+        # Take the current item's x position (origin: top left), and add half of its width, 
+        # so you get the coordinate of its center.
+        #
+        # "int((...) * 10)"
+        # Ursina gives coordinates from 0 (left edge) to 1 (right edge)
+        # so we temporarily make the coordinate larger, multiplying by the number of rows 
+        # for the x coord (and cols for the y coord) so we can use truncate extra digits
+        # and get a nice, clean number using the int().
+        #
+        # "(...) / 10"
+        # Then, we turn it back into a usuable Ursina coordinate by
+        # dividing what we multiplied from the earlier step.
+        self.x = int((self.x + self.scale_x/2) * 10) / 10
+
+        # Ursina coordinate system has an inverted y-axis so we subtract in this case
+        self.y = int((self.y - self.scale_y/2) * 8) / 8
+
+
 
 class Grid(Entity):
     def __init__(self):
