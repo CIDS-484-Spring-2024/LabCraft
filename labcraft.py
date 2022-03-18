@@ -167,7 +167,20 @@ class InvItem(Draggable):
         # check if outside of boundaries
         self.menu_constraint()
 
+        # check for swapping
+        self.overlap_check()
+
+    def overlap_check(self):
+        for child in self.parent.children:
+            if child.x == self.x and child.y == self.y:
+                if child == self:
+                    continue
+                else:
+                    child.x = self.xy_pos[0]
+                    child.y = self.xy_pos[1]
+
     def menu_constraint(self):
+
         if self.x < 0 or self.x > 0.95 or self.y > 0 or self.y < -0.95:
             
             # go back to stored position in self.xy_pos
