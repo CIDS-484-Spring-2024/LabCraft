@@ -195,25 +195,41 @@ class InvItem(Draggable):
         # check if outside of boundaries
         #self.menu_constraint()
 
-        # check for swapping
+        # check for swapping items
         self.overlap_check()
 
-        # test swapping container every drop
-        self.swap_container()
+        # when to swap containers
+        # if the item overlaps a cell in the other container?
+        if self.parent == self.inventory:
+            for cell in self.hotbar.get_all_cells():
+                if self.x == cell.x and self.y == cell.y:
+                    self.swap_container(self.hotbar) # switch to be in the hotbar 
+                    break
+        else:
+            self.swap_container(self.inventory)
+
 
         # check if outside of boundaries
         self.menu_constraint()
 
-        """ 
-        if self.parent == self.inventory:
-            # check if overlap empty spot in the hotbar
-            # 
-            self.parent = self.hotbar # switch to be in the hotbar 
-        """
+        
 
     #def container_check(self):
 
-    def swap_container(self):
+    def swap_container(self, container):
+
+        # more general/flexible
+        self.parent = container
+            
+        self.xy_pos = container.find_free_cell()
+        
+        self.x = self.xy_pos[0]
+        self.y = self.xy_pos[1]
+        
+        self.scale_x = 1 / (container.texture_scale[0] * 1.2)
+        self.scale_y = 1 / (container.texture_scale[1] * 1.2)
+
+        """ 
         if self.parent == self.inventory:
             self.parent = self.hotbar
             
@@ -233,11 +249,17 @@ class InvItem(Draggable):
 
             self.scale_x = 1 / (self.inventory.texture_scale[0] * 1.2) # see contructor for explanation to these calculations
             self.scale_y = 1 / (self.inventory.texture_scale[1] * 1.2)
+        """
 
         # 
         self.xy_pos = (self.x, self.y)
 
     def overlap_check(self):
+
+        # check for overlap with the other container?
+        
+
+        # check for overlap with another item
         for child in self.parent.children:
             if child.x == self.x and child.y == self.y:
                 if child == self:
