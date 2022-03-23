@@ -193,18 +193,49 @@ class InvItem(Draggable):
         self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1]
 
         # check if outside of boundaries
-        self.menu_constraint()
+        #self.menu_constraint()
 
         # check for swapping
         self.overlap_check()
 
+        # test swapping container every drop
+        self.swap_container()
+
+        # check if outside of boundaries
+        self.menu_constraint()
+
+        """ 
         if self.parent == self.inventory:
             # check if overlap empty spot in the hotbar
             # 
-            self.parent = self.hotbar # switch to be in the hotbar
+            self.parent = self.hotbar # switch to be in the hotbar 
+        """
 
     #def container_check(self):
 
+    def swap_container(self):
+        if self.parent == self.inventory:
+            self.parent = self.hotbar
+            
+            self.xy_pos = self.hotbar.find_free_cell()
+            
+            self.x = self.xy_pos[0]
+            self.y = self.xy_pos[1]
+            
+            self.scale_x = 1 / (self.hotbar.texture_scale[0] * 1.2)
+            self.scale_y = 1 / (self.hotbar.texture_scale[1] * 1.2)
+        else:
+            self.parent = self.inventory
+            self.xy_pos = self.inventory.find_free_cell()
+            
+            self.x = self.xy_pos[0]
+            self.y = self.xy_pos[1]
+
+            self.scale_x = 1 / (self.inventory.texture_scale[0] * 1.2) # see contructor for explanation to these calculations
+            self.scale_y = 1 / (self.inventory.texture_scale[1] * 1.2)
+
+        # 
+        self.xy_pos = (self.x, self.y)
 
     def overlap_check(self):
         for child in self.parent.children:
@@ -283,100 +314,6 @@ class Grid(Entity):
             if cell not in taken_cells:
                 return cell
 
-    
-        
-""" 
-class Hotbar(Entity):
-    def __init__(self):
-        super().__init__(
-            parent = camera.ui,
-            model = 'quad',
-            scale = (10/10, 1/10),
-            origin = (-.5, .5),
-            position = (-.5, -.4),
-            texture = 'white_cube',
-            texture_scale = (10, 1),
-            color = color.dark_gray
-        )
-
-        self.item_parent = Entity(
-            parent = self,
-            scale = (1/10, 1/1)
-        ) 
-"""
-
-"""
-class Inventory(Entity):
-    def __init__(self, grid_x, grid_y, x, y):
-        super().__init__(
-            parent = camera.ui,
-            model = 'quad',
-            scale = (grid_x/10, grid_y/10), # e.g. 5 x 8 grid will have scale = (.5, .8)
-            origin = (-.5, .5), 
-            position = (x, y),
-            texture = 'white_cube',
-            texture_scale = (grid_x, grid_y),
-            color = color.dark_gray
-        )
-        self.grid_x = grid_x
-        self.grid_y = grid_y
-
-        self.item_parent = Entity(
-            parent = self, 
-            scale = (1/self.grid_x, 1/self.grid_y)
-        )
-
-    def find_free_spot(self):
-        taken_spots = [(int(e.x), int(e.y)) for e in self.item_parent.children]
-        for y in range(self.grid_y):
-            for x in range(self.grid_x):
-                if not (x,-y) in taken_spots:
-                    return (x,-y)
-
-    def append(self, item):
-        icon = Draggable(
-            parent = inventory.item_parent,
-            model = 'quad',
-            texture = grass_icon_texture,
-            #texture_scale = (.25, .25),
-            #texture_offset = (.37,.25),
-            color = color.white,
-            origin = (-.5,.5),
-            position = self.find_free_spot(),
-            z = -.1
-        )
-        name = item.replace('_', ' ').title()
-        icon.tooltip = Tooltip(name)
-        icon.tooltip.background.color = color.color(0,0,0,.8)
-
-        def drag():
-            icon.org_pos = (icon.x, icon.y)
-            #icon.z -= .01
-
-        def drop():
-            # from center origin of icon, round to nearest int
-            # so that it drops/snaps the icon to the nearest grid space
-            icon.x = int(icon.x + 0.5)
-            icon.y = int(icon.y - 0.5)
-            #icon.z += .01
-
-            '''if outside, return to original position'''
-            if icon.x < 0 or icon.x >= self.grid_x or icon.y > 0 or icon.y <= -self.grid_y:
-                icon.position = (icon.org_pos)
-                return
-
-            '''if the spot is taken, swap positions'''
-            for c in self.children:
-                if c == icon:
-                    continue
-                
-                if c.x == icon.x and c.y == icon.y:
-                    print('swap positions')
-                    c.position = icon.org_pos
-
-        icon.drag = drag
-        icon.drop = drop
-"""
 
 class Voxel(Button):
     def __init__(self, position = (0,0,0), texture = grass_texture):
