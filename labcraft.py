@@ -199,14 +199,21 @@ class InvItem(Draggable):
         self.overlap_check()
 
         # when to swap containers
-        # if the item overlaps a cell in the other container?
         if self.parent == self.inventory:
+
+            """ # if the item overlaps a cell in the other container?
             for cell in self.hotbar.get_all_cells():
                 if self.x == cell.x and self.y == cell.y:
                     self.swap_container(self.hotbar) # switch to be in the hotbar 
-                    break
+                    break """
+
+            # if the item gets past a certain y value??
+            if self.y < -0.9:
+                self.swap_container(self.hotbar)
+
         else:
-            self.swap_container(self.inventory)
+            if self.y > 0:
+                self.swap_container(self.inventory)
 
 
         # check if outside of boundaries
