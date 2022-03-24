@@ -60,7 +60,6 @@ def update():
         player.enabled = True
         inventory_BG.enabled = False
         inventory_grid.enabled = False
-        #inventory.enabled = False
 
         # animate the hand to move back and forth when clicked
         if held_keys['left mouse'] or held_keys['right mouse']:
@@ -72,7 +71,6 @@ def update():
         player.enabled = False
         inventory_BG.enabled = True
         inventory_grid.enabled = True
-        #inventory.enabled = True
     
     if held_keys['1']: block_pick = 1
     if held_keys['2']: block_pick = 2
@@ -83,11 +81,6 @@ def update():
 
     if held_keys['escape']: 
         quit()
-
-    """ 
-    if debug == True:
-        print(player.position.y) 
-    """
     
     # if player falls through the map, return to starting point.
     if player.position.y < -10:
@@ -123,7 +116,6 @@ class MenuBG(Entity):
             # Divide rows/cols by 10, e.g. 10 cols => 1.00, 8 rows => 0.8
             # The extra 0.06 is used for the padding of the menu grid
             scale = ((rows / 10) + 0.06, (cols / 10) + 0.06), 
-            #texture = load_texture(),
             color = color.color(0,0,0,.8) # (hue, saturation, value, alpha)
         )
         if not pos:
@@ -132,8 +124,6 @@ class MenuBG(Entity):
         else:
             self.x = pos[0]
             self.y = pos[1]
-
-
 
 class InvItem(Draggable):
     def __init__(self, inventory, hotbar, type, pos):
@@ -165,69 +155,60 @@ class InvItem(Draggable):
         self.xy_pos = (self.x, self.y) # store current position
 
     def drop(self):
+        print('before snap:')
         print(f'x: {self.x}')
         print(f'y: {self.y}')
 
-        # Calculation explanation:
-        #
-        # "(self.x + self.scale_x/2)" 
-        # Take the current item's x position (origin: top left), and add half of its width, 
-        # so you get the coordinate of its center.
-        #
-        # "self.parent.texture_scale[0]"
-        # This is basically the number of rows that were passed in as arguments for its container
-        # (e.g. the grid has 10 rows). And then, "self.parent.texture_scale[1]"" would just be the num of cols.
-        # 
-        # "int((...) * self.parent.texture_scale[0])"
-        # Ursina gives coordinates from 0 (left edge) to 1 (right edge)
-        # so we temporarily make the coordinate larger, multiplying by the number of rows 
-        # for the x coord (and cols for the y coord) so we can use truncate extra digits
-        # and get a nice, clean number using the int().
-        #
-        # "(...) / self.parent.texture_scale[0]"
-        # Then, we turn it back into a usuable Ursina coordinate by
-        # dividing what we multiplied from the earlier step.
+        """ Calculation explanation:
+        
+        "(self.x + self.scale_x/2)" 
+        Take the current item's x position (origin: top left), and add half of its width, 
+        so you get the coordinate of its center.
+        
+        "self.parent.texture_scale[0]"
+        This is basically the number of rows that were passed in as arguments for its container
+        (e.g. the grid has 10 rows). And then, "self.parent.texture_scale[1]"" would just be the num of cols.
+        
+        "int((...) * self.parent.texture_scale[0])"
+        Ursina gives coordinates from 0 (left edge) to 1 (right edge)
+        so we temporarily make the coordinate larger, multiplying by the number of rows 
+        for the x coord (and cols for the y coord) so we can use truncate extra digits
+        and get a nice, clean number using the int().
+        
+        "(...) / self.parent.texture_scale[0]"
+        Then, we turn it back into a usuable Ursina coordinate by
+        dividing what we multiplied from the earlier step. """
         self.x = int((self.x + self.scale_x/2) * self.parent.texture_scale[0]) / self.parent.texture_scale[0]
 
         # Ursina coordinate system has an inverted y-axis so we subtract in this case
         self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1]
 
-        # check if outside of boundaries
-        #self.menu_constraint()
-
-        # check for swapping items
-        self.overlap_check()
-
-        # when to swap containers
+        # check to swap containers
         if self.parent == self.inventory:
-
-            """ # if the item overlaps a cell in the other container?
-            for cell in self.hotbar.get_all_cells():
-                if self.x == cell.x and self.y == cell.y:
-                    self.swap_container(self.hotbar) # switch to be in the hotbar 
-                    break """
-
             # if the item gets past a certain y value??
             if self.y < -0.9:
                 self.swap_container(self.hotbar)
-
         else:
             if self.y > 0:
                 self.swap_container(self.inventory)
 
+        # check for swapping items
+        self.overlap_check()
 
         # check if outside of boundaries
         self.menu_constraint()
 
-        
-
-    #def container_check(self):
+        print('after snap')
+        print(f'x: {self.x}')
+        print(f'y: {self.y}')
+        print('======')
 
     def swap_container(self, container):
 
         # more general/flexible
         self.parent = container
             
+        # [ ] TODO: instead of finding a free cell, drop it onto the position being hovered over
         self.xy_pos = container.find_free_cell()
         
         self.x = self.xy_pos[0]
@@ -313,17 +294,6 @@ class Grid(Entity):
         else:
             self.x = pos[0]
             self.y = pos[1]
-        
-        #self.add_new_item() # add items to inventory on grid instantiation
-    
-    # def add_new_item(self):
-    #     #pos = self.find_free_cell() #(0,0) # index coordinate, e.g. (2, -4) is 2 from the left and 4 from the top
-    #     InvItem(self, grass_icon_texture, self.find_free_cell())
-    #     InvItem(self, stone_icon_texture, self.find_free_cell())
-    #     InvItem(self, brick_icon_texture, self.find_free_cell())
-    #     InvItem(self, dirt_icon_texture, self.find_free_cell())
-    #     InvItem(self, sun_icon_texture, self.find_free_cell())
-    #     InvItem(self, pendulum_icon_texture, self.find_free_cell())
     
     def get_all_cells(self):
         all_cells = [Vec2(x,y) for y in range(0,-(self.cols),-1) for x in range(0,self.rows)]
@@ -334,8 +304,6 @@ class Grid(Entity):
         return taken_cells
 
     def find_free_cell(self):
-        #all_cells = [Vec2(x,y) for y in range(0,-8,-1) for x in range(0,10)] # ... https://youtu.be/hAl7oVJi7r0?t=2715 [45:15]
-        #taken_cells = [child.get_cell_pos() for child in self.children]
         all_cells = self.get_all_cells()
         taken_cells = self.get_taken_cells()
 
