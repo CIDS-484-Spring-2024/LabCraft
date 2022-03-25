@@ -28,6 +28,7 @@ arm_texture   = load_texture('assets/arm_texture.png')
 osc_texture   = load_texture('assets/osc_block.png')
 earth_texture = load_texture('assets/earth_block.png')
 mc_brick      = load_texture('assets/mc_brick.png')
+hotbar_cursor_texture = load_texture('assets/hotbar_cursor.png')
 
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 
@@ -91,9 +92,8 @@ def update():
     if held_keys['5']: block_pick = 5
     if held_keys['6']: block_pick = 6 """
 
-    # if held_keys['n']: 
-        # access the hotbar's children
-        # look at each item's block_pick property?
+    # if a number key is pressed, 
+        # set the hotbar to highlight the corresponding slot number pressed
     #if held_keys['1']:
         #hotbar.set_current_slot(1)
 
@@ -172,7 +172,11 @@ class InvItem(Draggable):
         self.hotbar = hotbar
         self.ID = ID
 
-        if ID == 1: self.texture = grass_icon_texture
+        # if self.ID == -1: 
+        #     self.texture = hotbar_cursor_texture
+        #     self.lock = Vec3(1,1,1)
+        #     self.z = -1
+        if self.ID == 1: self.texture = grass_icon_texture
 
     def drag(self):
         self.xy_pos = (self.x, self.y) # store current position
@@ -266,15 +270,13 @@ class InvItem(Draggable):
         self.xy_pos = (self.x, self.y)
 
     def overlap_check(self):
-
-        # check for overlap with the other container?
-        
-
         # check for overlap with another item
         for child in self.parent.children:
             if child.x == self.x and child.y == self.y:
                 if child == self:
                     continue
+                # if child.ID == -1:
+                #     continue 
                 else:
                     child.x = self.xy_pos[0]
                     child.y = self.xy_pos[1]
@@ -349,16 +351,32 @@ class Hotbar(Grid):
             cols = cols,
             pos = pos
         )
-        self.current_slot = 0 # index 0 to 9
+        self.current_slot = 0 # index 0 to 9, of the 10 slots in the hotbar
 
     #def set_current_slot(self, slot):
         # put the children in a list
-        # use the slot number as the index to change to
+        # use the slot number as the index to change self.current_slot
         # use the slot number to reference the corresponding child in the list
-        # set the block_pick as the block_number of that child
+        # set the block_pick as the ID of that child
 
     #def update(self):
         # highlight the slot corresponding to the self.current_slot
+
+# used for highlighting the current slot of the hotbar that is being used
+class HotbarCursor(InvItem):
+    def __init__(self, hotbar, ID):
+        super().__init__(
+            inventory = hotbar,
+            hotbar = hotbar,
+            #model = 'quad',
+            #scale = (0.1 * 1.1, 1 * 1.1), # (1 row / 10) * 1.1 => 0.1, (10 cols / 10) => 1
+            #origin = (-0.4,0.4),
+            #texture = hotbar_cursor_texture,
+            ID = ID,
+            pos = (0,0)
+        )
+        self.x = int((self.x + self.scale_x/2) * self.parent.texture_scale[0]) / self.parent.texture_scale[0]
+        self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1]
 
 
 
@@ -481,6 +499,7 @@ inventory_BG = MenuBG(10, 7, False)
 inventory = Inventory(10, 7)
 hotbar_BG = MenuBG(10,1, (0,-.46))
 hotbar = Hotbar(10,1, (-.5,-.4))
+hotbar_cursor = HotbarCursor(hotbar, -1)
 
 test_item1 = InvItem(inventory, hotbar, 1, inventory.find_free_cell())
 
