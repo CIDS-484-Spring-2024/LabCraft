@@ -79,6 +79,11 @@ def update():
     if held_keys['5']: block_pick = 5
     if held_keys['6']: block_pick = 6
 
+    # if held_keys['n']: 
+        # access the hotbar's children
+        # look at each item's block_pick property?
+
+
     if held_keys['escape']: 
         quit()
     
@@ -311,6 +316,22 @@ class Grid(Entity):
             if cell not in taken_cells:
                 return cell
 
+class Inventory(Grid):
+    def __init__(self, rows, cols):
+        super().__init__(
+            rows = rows,
+            cols = cols,
+            pos = False
+        )
+
+class Hotbar(Grid):    
+    def __init__(self, rows, cols, pos):
+        super().__init__(
+            rows = rows,
+            cols = cols,
+            pos = pos
+        )
+
 
 class Voxel(Button):
     def __init__(self, position = (0,0,0), texture = grass_texture):
@@ -427,9 +448,9 @@ sky = Sky()
 hand = Hand()
 
 inventory_BG = MenuBG(10, 7, False)
-inventory_grid = Grid(10, 7, False)
+inventory_grid = Inventory(10, 7)
 hotbar_BG = MenuBG(10,1, (0,-.46))
-hotbar_grid = Grid(10,1, (-.5,-.4))
+hotbar_grid = Hotbar(10,1, (-.5,-.4))
 
 test_item1 = InvItem(inventory_grid, hotbar_grid, grass_icon_texture, inventory_grid.find_free_cell())
 
