@@ -30,7 +30,18 @@ earth_texture = load_texture('assets/earth_block.png')
 mc_brick      = load_texture('assets/mc_brick.png')
 
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
-block_pick = 1
+
+""" 
+# Block Pick legend:
+0: empty hand
+1: grass
+2: stone
+3: brick
+4: dirt
+5: sun
+6: pendulum
+ """
+block_pick = 0 # default empty hand
 
 # {1: active gameplay}
 # {2: inventory menu screen}
@@ -333,6 +344,7 @@ class Hotbar(Grid):
         )
 
 
+
 class Voxel(Button):
     def __init__(self, position = (0,0,0), texture = grass_texture):
         super().__init__(
@@ -348,7 +360,7 @@ class Voxel(Button):
         # if the current block is being hovered on by the mouse
         # and the game state is the active gameplay
         # then build/destroy blocks
-        if self.hovered and game_state == 1: 
+        if self.hovered and game_state == 1 and block_pick > 0: 
             if key == 'left mouse down':
                 punch_sound.play()
                 if block_pick == 1: voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture)
