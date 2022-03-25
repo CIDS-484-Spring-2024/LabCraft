@@ -365,7 +365,7 @@ class Hotbar(Grid):
         else:
             block_pick = 0
         # update the position of the cursor
-        
+
 
         # approach2
         # if the hotbar cursor overlaps with a child of the hotbar
@@ -378,7 +378,7 @@ class Hotbar(Grid):
         # move the cursor using a left and right key, the number keys, or the scroll wheel
         # position is updated based on user input, and then the hotbar.current_slot is updated after that
         if key == '1':
-            self.current_slot = 1
+            self.current_slot = 0
             self.update_block_pick()
 
     """ def update(self):
