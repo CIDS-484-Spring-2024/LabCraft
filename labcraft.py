@@ -32,7 +32,7 @@ mc_brick      = load_texture('assets/mc_brick.png')
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 
 """ 
-# Block Pick legend:
+# Block ID Legend:
 0: empty hand
 1: grass
 2: stone
@@ -70,7 +70,7 @@ def update():
     if game_state == 1: # main game state
         player.enabled = True
         inventory_BG.enabled = False
-        inventory_grid.enabled = False
+        inventory.enabled = False
 
         # animate the hand to move back and forth when clicked
         if held_keys['left mouse'] or held_keys['right mouse']:
@@ -81,18 +81,22 @@ def update():
     if game_state == 2: # view inventory state
         player.enabled = False
         inventory_BG.enabled = True
-        inventory_grid.enabled = True
+        inventory.enabled = True
     
-    if held_keys['1']: block_pick = 1
+
+    """ if held_keys['1']: block_pick = 1
     if held_keys['2']: block_pick = 2
     if held_keys['3']: block_pick = 3
     if held_keys['4']: block_pick = 4
     if held_keys['5']: block_pick = 5
-    if held_keys['6']: block_pick = 6
+    if held_keys['6']: block_pick = 6 """
 
     # if held_keys['n']: 
         # access the hotbar's children
         # look at each item's block_pick property?
+    #if held_keys['1']:
+        #hotbar.set_current_slot(1)
+
 
 
     if held_keys['escape']: 
@@ -142,12 +146,12 @@ class MenuBG(Entity):
             self.y = pos[1]
 
 class InvItem(Draggable):
-    def __init__(self, inventory, hotbar, type, pos):
+    def __init__(self, inventory, hotbar, ID, pos):
         super().__init__(
             parent = inventory,
             model = 'quad',
             color = color.white,
-            texture = type,
+            #texture = type,
 
             # The grid has 10 columns, so each item should be 1/10 of the size of the grid
             # and we multiply it by a small amount to make the item slightly smaller 
@@ -166,6 +170,9 @@ class InvItem(Draggable):
         )
         self.inventory = inventory
         self.hotbar = hotbar
+        self.ID = ID
+
+        if ID == 1: self.texture = grass_icon_texture
 
     def drag(self):
         self.xy_pos = (self.x, self.y) # store current position
@@ -342,6 +349,17 @@ class Hotbar(Grid):
             cols = cols,
             pos = pos
         )
+        self.current_slot = 0 # index 0 to 9
+
+    #def set_current_slot(self, slot):
+        # put the children in a list
+        # use the slot number as the index to change to
+        # use the slot number to reference the corresponding child in the list
+        # set the block_pick as the block_number of that child
+
+    #def update(self):
+        # highlight the slot corresponding to the self.current_slot
+
 
 
 
@@ -460,10 +478,10 @@ sky = Sky()
 hand = Hand()
 
 inventory_BG = MenuBG(10, 7, False)
-inventory_grid = Inventory(10, 7)
+inventory = Inventory(10, 7)
 hotbar_BG = MenuBG(10,1, (0,-.46))
-hotbar_grid = Hotbar(10,1, (-.5,-.4))
+hotbar = Hotbar(10,1, (-.5,-.4))
 
-test_item1 = InvItem(inventory_grid, hotbar_grid, grass_icon_texture, inventory_grid.find_free_cell())
+test_item1 = InvItem(inventory, hotbar, 1, inventory.find_free_cell())
 
 app.run()
