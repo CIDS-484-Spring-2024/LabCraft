@@ -95,7 +95,7 @@ def update():
     # if a number key is pressed, 
         # set the hotbar to highlight the corresponding slot number pressed
     #if held_keys['1']:
-        #hotbar.set_current_slot(1)
+       #hotbar.set_current_slot(0)
 
 
 
@@ -225,6 +225,9 @@ class InvItem(Draggable):
         # check if outside of boundaries
         self.menu_constraint()
 
+        # check for changes in the current slot of the hotbar
+        self.hotbar.update_block_pick()
+
         print('after snap')
         print(f'x: {self.x}')
         print(f'y: {self.y}')
@@ -243,28 +246,6 @@ class InvItem(Draggable):
         
         self.scale_x = 1 / (container.texture_scale[0] * 1.2)
         self.scale_y = 1 / (container.texture_scale[1] * 1.2)
-
-        """ 
-        if self.parent == self.inventory:
-            self.parent = self.hotbar
-            
-            self.xy_pos = self.hotbar.find_free_cell()
-            
-            self.x = self.xy_pos[0]
-            self.y = self.xy_pos[1]
-            
-            self.scale_x = 1 / (self.hotbar.texture_scale[0] * 1.2)
-            self.scale_y = 1 / (self.hotbar.texture_scale[1] * 1.2)
-        else:
-            self.parent = self.inventory
-            self.xy_pos = self.inventory.find_free_cell()
-            
-            self.x = self.xy_pos[0]
-            self.y = self.xy_pos[1]
-
-            self.scale_x = 1 / (self.inventory.texture_scale[0] * 1.2) # see contructor for explanation to these calculations
-            self.scale_y = 1 / (self.inventory.texture_scale[1] * 1.2)
-        """
 
         # 
         self.xy_pos = (self.x, self.y)
@@ -345,24 +326,88 @@ class Inventory(Grid):
         )
 
 class Hotbar(Grid):    
-    def __init__(self, rows, cols, pos):
+    def __init__(self, rows, cols, pos, cursor):
         super().__init__(
             rows = rows,
             cols = cols,
             pos = pos
         )
         self.current_slot = 0 # index 0 to 9, of the 10 slots in the hotbar
+        self.cursor = cursor
 
-    #def set_current_slot(self, slot):
-        # put the children in a list
+        # print(self.get_all_cells()) # debug
+
+    def update_block_pick(self):
+        global block_pick
+
+        # approach1
+        # put all cells in a list
+        all_cells = self.get_all_cells()
         # use the slot number as the index to change self.current_slot
-        # use the slot number to reference the corresponding child in the list
-        # set the block_pick as the ID of that child
+        #self.current_slot = slot
+        # use the slot number to reference the corresponding cell in the list
+        target_cell = all_cells[self.current_slot]
+        # set the block_pick as the ID of the child that overlaps that cell
+        if self.children:
+            for child in self.children:
+                if target_cell.x == child.x and target_cell.y == child.y:
+                    # debug
+                    print('pick this block!') 
+                    print(block_pick)
+                    print(child.ID)
 
-    #def update(self):
-        # highlight the slot corresponding to the self.current_slot
+                    block_pick = child.ID
+
+                    print(block_pick)
+                    print('======')
+                else:
+                    block_pick = 0
+        else:
+            block_pick = 0
+        # update the position of the cursor
+        
+
+        # approach2
+        # if the hotbar cursor overlaps with a child of the hotbar
+            # set block_pick to the ID of that child
+        #
+        # hmmmmm this doesnt work because the coordinates of the crusor are in relation to
+        # the camera.ui, but the children of the hotbar are in relation to the hotbar
+
+    def input(self, key):
+        # move the cursor using a left and right key, the number keys, or the scroll wheel
+        # position is updated based on user input, and then the hotbar.current_slot is updated after that
+        if key == '1':
+            self.current_slot = 1
+            self.update_block_pick()
+
+    """ def update(self):
+        for child in self.children:
+            if self.cursor.x == child.x and self.cursor.y == child.y:
+                print('pick this block!') """
+
+    
 
 # used for highlighting the current slot of the hotbar that is being used
+class HotbarCursor(Entity):
+    def __init__(self):
+        super().__init__(
+            parent = camera.ui,
+            model = 'quad',
+            scale = (0.1, 0.1),
+            position = ((-.45,-.45)), # (-.5 + (scale_x / 2), -.4 - (scale_y / 2))
+            texture = hotbar_cursor_texture
+        )
+
+        # debug
+        print(f'x: {self.x}')
+        print(f'y: {self.y}')
+
+    #def update(self):
+        # the position is updated based on a hotbar.current_slot check
+        # position = starting position + (hotbar.current_slot * cell width)
+
+""" 
 class HotbarCursor(InvItem):
     def __init__(self, hotbar, ID):
         super().__init__(
@@ -376,7 +421,8 @@ class HotbarCursor(InvItem):
             pos = (0,0)
         )
         self.x = int((self.x + self.scale_x/2) * self.parent.texture_scale[0]) / self.parent.texture_scale[0]
-        self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1]
+        self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1] 
+"""
 
 
 
@@ -498,8 +544,9 @@ hand = Hand()
 inventory_BG = MenuBG(10, 7, False)
 inventory = Inventory(10, 7)
 hotbar_BG = MenuBG(10,1, (0,-.46))
-hotbar = Hotbar(10,1, (-.5,-.4))
-hotbar_cursor = HotbarCursor(hotbar, -1)
+hotbar_cursor = HotbarCursor() #hotbar, -1)
+hotbar = Hotbar(10,1, (-.5,-.4), hotbar_cursor)
+
 
 test_item1 = InvItem(inventory, hotbar, 1, inventory.find_free_cell())
 
