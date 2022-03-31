@@ -387,15 +387,16 @@ class Hotbar(Grid):
     def input(self, key):
         # move the cursor using a left and right key, the number keys, or the scroll wheel
         # position is updated based on user input, and then the hotbar.current_slot is updated after that
-        if key == '1':
-            self.current_slot = 0
+        if key == '1' or key == '2' or key == '3' or key == '4' or key == '5' or key == '6' or key == '7' or key == '8' or key == '9':
+            self.current_slot = (int(key) - 1)
             self.update_block_pick()
-            self.cursor.updatePos(0)
-
-        if key == '2':
-            self.current_slot = 1
+            self.cursor.updatePos(self.current_slot)
+        
+        if key == '0':
+            self.current_slot = 9
             self.update_block_pick()
-            self.cursor.updatePos(1)
+            self.cursor.updatePos(self.current_slot)
+        
 
     
 
