@@ -343,14 +343,23 @@ class Hotbar(Grid):
         # approach1
         # put all cells in a list
         all_cells = self.get_all_cells()
-        # use the slot number as the index to change self.current_slot
-        #self.current_slot = slot
+
         # use the slot number to reference the corresponding cell in the list
         target_cell = all_cells[self.current_slot]
+
         # set the block_pick as the ID of the child that overlaps that cell
-        if self.children:
+        if self.children: # if the hotbar has any children, aka if it's not NULL
             for child in self.children:
-                if target_cell.x == child.x and target_cell.y == child.y:
+
+                print(int(target_cell.x))
+                print(int(child.x * 10))
+
+                # (child.x * 10)
+                # the item icon's x values are: 0, 0.1, 0.2, ... 1.0
+                # but the target_cell's x values are: 0, 1, 2, ... 10
+                # so we just multiply the child.x values by 10 so that they are able to match
+                # and then truncate the decimal places by using int()
+                if int(target_cell.x) == int(child.x * 10):
                     # debug
                     print('pick this block!') 
                     print(block_pick)
@@ -364,7 +373,7 @@ class Hotbar(Grid):
                     block_pick = 0
         else:
             block_pick = 0
-        # update the position of the cursor
+        # update the position of the cursor?
 
 
         # approach2
@@ -373,6 +382,7 @@ class Hotbar(Grid):
         #
         # hmmmmm this doesnt work because the coordinates of the crusor are in relation to
         # the camera.ui, but the children of the hotbar are in relation to the hotbar
+        # [ ] add this to Journal
 
     def input(self, key):
         # move the cursor using a left and right key, the number keys, or the scroll wheel
@@ -380,11 +390,12 @@ class Hotbar(Grid):
         if key == '1':
             self.current_slot = 0
             self.update_block_pick()
+            self.cursor.updatePos(0)
 
-    """ def update(self):
-        for child in self.children:
-            if self.cursor.x == child.x and self.cursor.y == child.y:
-                print('pick this block!') """
+        if key == '2':
+            self.current_slot = 1
+            self.update_block_pick()
+            self.cursor.updatePos(1)
 
     
 
@@ -403,26 +414,10 @@ class HotbarCursor(Entity):
         print(f'x: {self.x}')
         print(f'y: {self.y}')
 
-    #def update(self):
+    def updatePos(self, slot):
         # the position is updated based on a hotbar.current_slot check
         # position = starting position + (hotbar.current_slot * cell width)
-
-""" 
-class HotbarCursor(InvItem):
-    def __init__(self, hotbar, ID):
-        super().__init__(
-            inventory = hotbar,
-            hotbar = hotbar,
-            #model = 'quad',
-            #scale = (0.1 * 1.1, 1 * 1.1), # (1 row / 10) * 1.1 => 0.1, (10 cols / 10) => 1
-            #origin = (-0.4,0.4),
-            #texture = hotbar_cursor_texture,
-            ID = ID,
-            pos = (0,0)
-        )
-        self.x = int((self.x + self.scale_x/2) * self.parent.texture_scale[0]) / self.parent.texture_scale[0]
-        self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1] 
-"""
+        self.x = -.45 + (slot * self.scale_x)
 
 
 
