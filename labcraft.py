@@ -172,11 +172,18 @@ class InvItem(Draggable):
         self.hotbar = hotbar
         self.ID = ID
 
-        # if self.ID == -1: 
-        #     self.texture = hotbar_cursor_texture
-        #     self.lock = Vec3(1,1,1)
-        #     self.z = -1
+        # 1: grass
+        # 2: stone
+        # 3: brick
+        # 4: dirt
+        # 5: sun
+        # 6: pendulum
         if self.ID == 1: self.texture = grass_icon_texture
+        if self.ID == 2: self.texture = stone_icon_texture
+        if self.ID == 3: self.texture = brick_icon_texture
+        if self.ID == 4: self.texture = dirt_icon_texture
+        if self.ID == 5: self.texture = sun_icon_texture
+        if self.ID == 6: self.texture = pendulum_icon_texture
 
     def drag(self):
         self.xy_pos = (self.x, self.y) # store current position
@@ -341,6 +348,7 @@ class Hotbar(Grid):
         global block_pick
 
         # approach1
+        # [ ] add this algorithm to the Journal
         # put all cells in a list
         all_cells = self.get_all_cells()
 
@@ -369,11 +377,11 @@ class Hotbar(Grid):
 
                     print(block_pick)
                     print('======')
+                    break
                 else:
                     block_pick = 0
         else:
             block_pick = 0
-        # update the position of the cursor?
 
 
         # approach2
@@ -395,12 +403,9 @@ class Hotbar(Grid):
         if key == '0':
             self.current_slot = 9
             self.update_block_pick()
-            self.cursor.updatePos(self.current_slot)
-        
+            self.cursor.updatePos(self.current_slot)     
 
-    
-
-# used for highlighting the current slot of the hotbar that is being used
+# used for highlighting the current slot of the hotbar that is equipped
 class HotbarCursor(Entity):
     def __init__(self):
         super().__init__(
@@ -419,8 +424,6 @@ class HotbarCursor(Entity):
         # the position is updated based on a hotbar.current_slot check
         # position = starting position + (hotbar.current_slot * cell width)
         self.x = -.45 + (slot * self.scale_x)
-
-
 
 
 class Voxel(Button):
@@ -545,5 +548,10 @@ hotbar = Hotbar(10,1, (-.5,-.4), hotbar_cursor)
 
 
 test_item1 = InvItem(inventory, hotbar, 1, inventory.find_free_cell())
+test_item2 = InvItem(inventory, hotbar, 2, inventory.find_free_cell())
+test_item3 = InvItem(inventory, hotbar, 3, inventory.find_free_cell())
+test_item4 = InvItem(inventory, hotbar, 4, inventory.find_free_cell())
+test_item5 = InvItem(inventory, hotbar, 5, inventory.find_free_cell())
+test_item6 = InvItem(inventory, hotbar, 6, inventory.find_free_cell())
 
 app.run()
