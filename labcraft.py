@@ -30,28 +30,35 @@ earth_texture = load_texture('assets/earth_block.png')
 mc_brick      = load_texture('assets/mc_brick.png')
 hotbar_cursor_texture = load_texture('assets/hotbar_cursor.png')
 
+# sound effects
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
+
 
 """ 
 # Block ID Legend:
-0: empty hand
-1: grass
-2: stone
-3: brick
-4: dirt
-5: sun
-6: pendulum
+ 0: empty hand
+ 1: grass
+ 2: stone
+ 3: brick
+ 4: dirt
+ 5: sun
+ 6: pendulum
  """
 block_pick = 0 # default empty hand
 
-# {1: active gameplay}
-# {2: inventory menu screen}
+"""
+# Game States Legend:
+ 1: active gameplay
+ 2: inventory menu screen
+ """
 game_state = 1 
+
 
 window.fps_counter.enabled = True
 window.exit_button.visible = True
 
 debug = True
+
 
 def update():
     global block_pick
@@ -67,7 +74,6 @@ def update():
     if held_keys['q']:
         game_state = 1
 
-    # move arm visually on top of menu, to act like it's a phone(?)
     if game_state == 1: # main game state
         player.enabled = True
         inventory_BG.enabled = False
@@ -83,21 +89,6 @@ def update():
         player.enabled = False
         inventory_BG.enabled = True
         inventory.enabled = True
-    
-
-    """ if held_keys['1']: block_pick = 1
-    if held_keys['2']: block_pick = 2
-    if held_keys['3']: block_pick = 3
-    if held_keys['4']: block_pick = 4
-    if held_keys['5']: block_pick = 5
-    if held_keys['6']: block_pick = 6 """
-
-    # if a number key is pressed, 
-        # set the hotbar to highlight the corresponding slot number pressed
-    #if held_keys['1']:
-       #hotbar.set_current_slot(0)
-
-
 
     if held_keys['escape']: 
         quit()
@@ -111,18 +102,6 @@ def update():
         player.y = 1
         player.x = 1
         player.z = 1
-
-""" 
-# input handler?
-def input(key):
-    if key == '1': block_pick = 1
-    if key == '2': block_pick = 2
-    if key == '3': block_pick = 3
-    if key == '4': block_pick = 4
-    if key == '5': block_pick = 5
-    if key == '6': block_pick = 6 
-"""
-
 
 
 # === Class Declarations ===
@@ -151,11 +130,11 @@ class InvItem(Draggable):
             parent = inventory,
             model = 'quad',
             color = color.white,
-            #texture = type,
 
             # The grid has 10 columns, so each item should be 1/10 of the size of the grid
             # and we multiply it by a small amount to make the item slightly smaller 
             # than the inventory slot to give it a padding.
+            # this increases the denominator in the equation, which will equal a smaller number.
             # And similarly with the scale_y, there's 8 rows so each is 1/8 of the size
             scale_x = 1 / (inventory.texture_scale[0] * 1.2), 
             scale_y = 1 / (inventory.texture_scale[1] * 1.2),
@@ -165,6 +144,7 @@ class InvItem(Draggable):
             # e.g. 1.2 / 2 = 0.6
             origin = (-0.6, 0.6), 
 
+            # set position in relation to however many cells there are in the inventory
             x = pos[0] * 1 / inventory.texture_scale[0],
             y = pos[1] * 1 / inventory.texture_scale[1]
         )
@@ -172,12 +152,7 @@ class InvItem(Draggable):
         self.hotbar = hotbar
         self.ID = ID
 
-        # 1: grass
-        # 2: stone
-        # 3: brick
-        # 4: dirt
-        # 5: sun
-        # 6: pendulum
+        # set icon's texture based on ID
         if self.ID == 1: self.texture = grass_icon_texture
         if self.ID == 2: self.texture = stone_icon_texture
         if self.ID == 3: self.texture = brick_icon_texture
@@ -193,8 +168,9 @@ class InvItem(Draggable):
         print(f'x: {self.x}')
         print(f'y: {self.y}')
 
-        """ Calculation explanation:
-        
+        """ 
+        # Calculation explanation:
+
         "(self.x + self.scale_x/2)" 
         Take the current item's x position (origin: top left), and add half of its width, 
         so you get the coordinate of its center.
@@ -211,7 +187,8 @@ class InvItem(Draggable):
         
         "(...) / self.parent.texture_scale[0]"
         Then, we turn it back into a usuable Ursina coordinate by
-        dividing what we multiplied from the earlier step. """
+        dividing what we multiplied from the earlier step. 
+        """
         self.x = int((self.x + self.scale_x/2) * self.parent.texture_scale[0]) / self.parent.texture_scale[0]
 
         # Ursina coordinate system has an inverted y-axis so we subtract in this case
@@ -219,7 +196,7 @@ class InvItem(Draggable):
 
         # check to swap containers
         if self.parent == self.inventory:
-            # if the item gets past a certain y value??
+            # if the item gets past a certain y value, swap containers
             if self.y < -0.9:
                 self.swap_container(self.hotbar)
         else:
@@ -245,16 +222,19 @@ class InvItem(Draggable):
         # more general/flexible
         self.parent = container
             
+
         # [ ] TODO: instead of finding a free cell, drop it onto the position being hovered over
         self.xy_pos = container.find_free_cell()
         
         self.x = self.xy_pos[0]
         self.y = self.xy_pos[1]
         
+
+        # resive item to be in relation to the new container
         self.scale_x = 1 / (container.texture_scale[0] * 1.2)
         self.scale_y = 1 / (container.texture_scale[1] * 1.2)
 
-        # 
+        # i honestly forgot what this does or why i included it here
         self.xy_pos = (self.x, self.y)
 
     def overlap_check(self):
@@ -263,8 +243,6 @@ class InvItem(Draggable):
             if child.x == self.x and child.y == self.y:
                 if child == self:
                     continue
-                # if child.ID == -1:
-                #     continue 
                 else:
                     child.x = self.xy_pos[0]
                     child.y = self.xy_pos[1]
@@ -280,7 +258,9 @@ class InvItem(Draggable):
             print('out of bounds!')
 
     def get_cell_pos(self):
-        # ... https://youtu.be/hAl7oVJi7r0?t=2904 [48:24]
+
+        # This code block is taken from: https://youtu.be/hAl7oVJi7r0?t=2904 [48:24]
+        # pls watch for explanation
         x = int(self.x * self.parent.texture_scale[0])
         y = int(self.y * self.parent.texture_scale[1])
         return Vec2(x,y)
@@ -342,8 +322,6 @@ class Hotbar(Grid):
         self.current_slot = 0 # index 0 to 9, of the 10 slots in the hotbar
         self.cursor = cursor
 
-        # print(self.get_all_cells()) # debug
-
     def update_block_pick(self):
         global block_pick
 
@@ -362,35 +340,24 @@ class Hotbar(Grid):
                 print(int(target_cell.x))
                 print(int(child.x * 10))
 
-                # (child.x * 10)
-                # the item icon's x values are: 0, 0.1, 0.2, ... 1.0
-                # but the target_cell's x values are: 0, 1, 2, ... 10
-                # so we just multiply the child.x values by 10 so that they are able to match
-                # and then truncate the decimal places by using int()
                 if int(target_cell.x) == int(child.x * 10):
-                    # debug
-                    print('pick this block!') 
-                    print(block_pick)
-                    print(child.ID)
+                    
+                    if debug == True:
+                        print('pick this block!') 
+                        print(block_pick)
+                        print(child.ID)
 
                     block_pick = child.ID
 
-                    print(block_pick)
-                    print('======')
+                    if debug == True:
+                        print(block_pick)
+                        print('======')
+                    
                     break
                 else:
                     block_pick = 0
         else:
             block_pick = 0
-
-
-        # approach2
-        # if the hotbar cursor overlaps with a child of the hotbar
-            # set block_pick to the ID of that child
-        #
-        # hmmmmm this doesnt work because the coordinates of the crusor are in relation to
-        # the camera.ui, but the children of the hotbar are in relation to the hotbar
-        # [ ] add this to Journal
 
     def input(self, key):
         # move the cursor using a left and right key, the number keys, or the scroll wheel
@@ -416,9 +383,9 @@ class HotbarCursor(Entity):
             texture = hotbar_cursor_texture
         )
 
-        # debug
-        print(f'x: {self.x}')
-        print(f'y: {self.y}')
+        if debug == True:
+            print(f'x: {self.x}')
+            print(f'y: {self.y}')
 
     def updatePos(self, slot):
         # the position is updated based on a hotbar.current_slot check
@@ -540,10 +507,11 @@ player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
+
 inventory_BG = MenuBG(10, 7, False)
 inventory = Inventory(10, 7)
 hotbar_BG = MenuBG(10,1, (0,-.46))
-hotbar_cursor = HotbarCursor() #hotbar, -1)
+hotbar_cursor = HotbarCursor()
 hotbar = Hotbar(10,1, (-.5,-.4), hotbar_cursor)
 
 
