@@ -102,6 +102,16 @@ def update():
         player.y = 1
         player.x = 1
         player.z = 1
+    
+    #if player goes to high return to starting point.
+    if player.position.y > 20:
+
+        if debug == True:
+            print("reverse falling!")
+        
+        player.y =1
+        player.x =1
+        player.z =1
 
 
 # === Class Declarations ===
