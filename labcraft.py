@@ -469,8 +469,12 @@ class pendulum(Button):
             color = color.gray,
             origin_y = 0.5,
             scale = 0.5)
-
+           
+        self.t = 0.0
         self.pendulum = Entity(model = "pendulum", collider = "mesh", texture = "mc_brick.png", scale = 0.1)
+        self.Text=Text("Enter an Amplitude")
+        
+        self.Amp=Amp
 
 
     def update(self):
@@ -479,6 +483,8 @@ class pendulum(Button):
         if self.hovered and held_keys['right mouse']:
             destroy(self.pendulum)        
             destroy(self)
+            destroy(self.Text)
+            
           
     
 class solarSystem(Button):
@@ -490,7 +496,7 @@ class solarSystem(Button):
             origin_y = 0.5,
             texture = texture,
             color = color.color(0,0,random.uniform(0.9,1)),
-            scale = 0.5)
+            scale = .5)
 
         self.planet = Entity(model="assets/block", scale= 0.1, texture = earth_texture)
         self.t = 0.0
