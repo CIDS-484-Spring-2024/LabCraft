@@ -6,6 +6,7 @@ window.borderless = False
 
 app = Ursina()
 
+
 # block textures
 grass_texture = load_texture('assets/grass_block.png')
 stone_texture = load_texture('assets/stone_block.png')
@@ -51,6 +52,7 @@ block_pick = 0 # default empty hand
  1: active gameplay
  2: inventory menu screen
  """
+global game_state
 game_state = 1 
 
 
@@ -64,16 +66,16 @@ def update():
     global block_pick
     global game_state
     global debug
-
+    
 
     # === Game States ===
 
     if held_keys['e']:
         game_state = 2
-
+        
+    
     if held_keys['q']:
         game_state = 1
-
     if game_state == 1: # main game state
         player.enabled = True
         inventory_BG.enabled = False
@@ -89,7 +91,11 @@ def update():
         player.enabled = False
         inventory_BG.enabled = True
         inventory.enabled = True
-
+    
+    if game_state == 3: #This logic is for the pendulum
+        player.enabled = False
+        inventory_BG.enabled = False
+        inventory.enabled = False
     if held_keys['escape']: 
         quit()
     
@@ -460,6 +466,7 @@ class Hand(Entity):
 
 
 class pendulum(Button):
+   
     def __init__(self,position=(0,0,0), texture = pendulum_texture):
         super().__init__(
             parent = scene,
@@ -469,22 +476,54 @@ class pendulum(Button):
             color = color.gray,
             origin_y = 0.5,
             scale = 0.5)
-           
+        
         self.t = 0.0
         self.pendulum = Entity(model = "pendulum", collider = "mesh", texture = "mc_brick.png", scale = 0.1)
-        self.Text=Text("Enter an Amplitude")
-        
-        self.Amp=Amp
+        #Start of the logic for the amplitude change
+        global Box
+        Box = InputField()
+        global BOB
+        BOB = Button(scale=.05, x=-.4)
+        BOB.tooltip = Tooltip("Enter an Amplitude, then click me")
+        #The game state changes so the cursor is free to move
+        global game_state
+        game_state = 3
+        global Amp
+        global amp
+        amp=0
+        #self.Amp is a universal variable touches all the files
+        self.Amp=20
+      
 
 
     def update(self):
+        global amp
+        global Amp
+        global BOB
+        global Box
         simple_pendulum(self)
-
+        
+        Amp=20
         if self.hovered and held_keys['right mouse']:
             destroy(self.pendulum)        
             destroy(self)
-            destroy(self.Text)
+        #This method does all the heavy lifting for converting the user input   
+        def Rtrn():
+            global BOB
+            global game_state
+            global amp
+            global Box
+            amp=int(float(Box.text))
+            self.Amp=amp
+            destroy(Box)
+            destroy(BOB)
+            game_state=1
+        global BOB
+        #calls method above
+        BOB.on_click = Rtrn
+        
             
+    
           
     
 class solarSystem(Button):
