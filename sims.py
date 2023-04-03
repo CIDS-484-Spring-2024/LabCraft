@@ -5,6 +5,7 @@ from ursina import *
 f = open("Pendulum", "w") 
 p = open("Planet", "w")
 z =open("Z", "w")
+z.write("testing")
 f.write("time "+"oscilations "+'\n')
 T=0
 Z=0

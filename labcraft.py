@@ -3,9 +3,17 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 
 window.borderless = False
-
+d = open("placed", "w")
+d.write("Position"+" "+"type"+'\n')
+pl = open("destroyed", "w")
+pl.write("Position"+" "+"type"+'\n')
+dR = open("c:\\Users\Zach's LapTop\placed", "r")
+Chad=dR.readline()
+print("Here! ---------------------")
+wussy =dR.tell()
+print(wussy)
+print(Chad)
 app = Ursina()
-
 
 # block textures
 grass_texture = load_texture('assets/grass_block.png')
@@ -424,18 +432,53 @@ class Voxel(Button):
         # if the current block is being hovered on by the mouse
         # and the game state is the active gameplay
         # then build/destroy blocks
+        #writes to placed file, and to destroyed file for save data
         if self.hovered and game_state == 1 and block_pick > 0: 
             if key == 'left mouse down':
+                global place
+                global typea
                 punch_sound.play()
-                if block_pick == 1: voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture)
-                if block_pick == 2: voxel = Voxel(position = self.position + mouse.normal, texture = stone_texture)
-                if block_pick == 3: voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
-                if block_pick == 4: voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
-                if block_pick == 5: voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
-                if block_pick == 6: voxel = pendulum(position = self.position+mouse.normal, texture = pendulum_texture)
+
+                if block_pick == 1: 
+                    voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
+                #this is for potential save state idea
+                    place=self.position
+                    d.write(str(place)+","+str(self.texture)+'\n')
+                    d.close
+                    Wussy=dR.tell()
+                    print(Wussy)
+                    print(dR.readline())
+                if block_pick == 2: 
+                    voxel = Voxel(position = self.position + mouse.normal, texture = stone_texture)
+                    place=self.position
+                    d.write(str(place)+","+str(self.texture)+'\n')
+                if block_pick == 3:
+                    voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
+                    place=self.position
+                    typea= self.texture
+                    d.write(str(place)+","+str(typea)+'\n')
+                if block_pick == 4: 
+                    voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
+                    place=self.position
+                    typea= self.texture
+                    d.write(str(place)+","+str(typea)+'\n')
+                if block_pick == 5: 
+                    voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
+                    place=self.position
+                    typea= self.texture
+                    d.write(str(place)+","+str(typea)+'\n')
+                if block_pick == 6: 
+                    voxel = pendulum(position = self.position+mouse.normal, texture = pendulum_texture)
+                    place=self.position
+                    typea= self.texture
+                    d.write(str(place)+","+str(typea)+'\n')
             if key == 'right mouse down':
+                
                 punch_sound.play()
+                typeb=self.texture
                 destroy(self)
+                pl.write(str(place)+","+str(typeb)+'\n')
+                
 
 
 class Sky(Entity):
