@@ -3,15 +3,13 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 
 window.borderless = False
-d = open("placed", "w")
-d.write("Position"+" "+"type"+'\n')
+d = open("placed", "a")
+d.close()
 pl = open("destroyed", "w")
 pl.write("Position"+" "+"type"+'\n')
-dR = open("c:\\Users\Zach's LapTop\placed", "r")
-Chad=dR.readline()
+d = open("placed", "r")
+Chad=d.readline()
 print("Here! ---------------------")
-wussy =dR.tell()
-print(wussy)
 print(Chad)
 app = Ursina()
 
@@ -69,12 +67,11 @@ window.exit_button.visible = True
 
 debug = True
 
-
+#voxel = Voxel(position = Vec3(17,1,10), texture = grass_texture)
 def update():
     global block_pick
     global game_state
     global debug
-    
 
     # === Game States ===
 
@@ -443,35 +440,49 @@ class Voxel(Button):
                     voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
                 #this is for potential save state idea
                     place=self.position
-                    d.write(str(place)+","+str(self.texture)+'\n')
+                    place1=str(place)
+                    place2=place1.replace("Vec3","")
+                    place3=place2.replace("(","")
+                    place4=place3.replace(")","")
+                    d = open("placed","w")   
+                    d.write(place4+'\n')
                     d.close
-                    Wussy=dR.tell()
-                    print(Wussy)
-                    print(dR.readline())
+                    
+                   
                 if block_pick == 2: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = stone_texture)
-                    place=self.position
+                    place=self.position+(0,1,0)
+                    d = open("placed","a")
                     d.write(str(place)+","+str(self.texture)+'\n')
+                    d.close
                 if block_pick == 3:
                     voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
                     place=self.position
                     typea= self.texture
-                    d.write(str(place)+","+str(typea)+'\n')
+                    d = open("placed","a")
+                    d.write(str(place)+","+str(self.texture)+'\n')
+                    d.close
                 if block_pick == 4: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
                     place=self.position
                     typea= self.texture
-                    d.write(str(place)+","+str(typea)+'\n')
+                    d = open("placed","a")
+                    d.write(str(place)+","+str(self.texture)+'\n')
+                    d.close
                 if block_pick == 5: 
                     voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
                     place=self.position
                     typea= self.texture
-                    d.write(str(place)+","+str(typea)+'\n')
+                    d = open("placed","a")
+                    d.write(str(place)+","+str(self.texture)+'\n')
+                    d.close
                 if block_pick == 6: 
                     voxel = pendulum(position = self.position+mouse.normal, texture = pendulum_texture)
                     place=self.position
                     typea= self.texture
-                    d.write(str(place)+","+str(typea)+'\n')
+                    d = open("placed","a")
+                    d.write(str(place)+","+str(self.texture)+'\n')
+                    d.close
             if key == 'right mouse down':
                 
                 punch_sound.play()
@@ -596,8 +607,18 @@ class solarSystem(Button):
 def terrainGen():
     for z in range(20):
         for x in range(20):
-            voxel = Voxel(position = (x,0,z))
-
+            voxel = Voxel(position = (x,-1,z))
+    #test_string ="1,1,1"
+  #  res=tuple(map(int, test_string.split(',')))
+   # voxel=Voxel(position = Vec3(res), texture=grass_texture)
+    
+    with open("placed","r") as file:
+        myList=[]
+        for line in file:
+            myList.append(line.rstrip())
+            res=tuple(map(int, myList[0].split(',')))
+            voxel=Voxel(position=Vec3(res),texture=stone_texture)
+    
 
 terrainGen()
 
