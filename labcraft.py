@@ -3,6 +3,7 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 
 window.borderless = False
+
 d = open("placed", "a")
 d.close()
 pl = open("destroyed", "w")
@@ -439,56 +440,72 @@ class Voxel(Button):
                 if block_pick == 1: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
                 #this is for potential save state idea
-                    place=self.position
+                    place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
-                    d = open("placed","w")   
-                    d.write(place4+'\n')
+                    d = open("placed","a")   
+                    d.write(place4+","+"1"+'\n')
                     d.close
                     
                    
                 if block_pick == 2: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = stone_texture)
-                    place=self.position+(0,1,0)
-                    d = open("placed","a")
-                    d.write(str(place)+","+str(self.texture)+'\n')
+                    place=self.position+mouse.normal
+                    place1=str(place)
+                    place2=place1.replace("Vec3","")
+                    place3=place2.replace("(","")
+                    place4=place3.replace(")","")
+                    d = open("placed","a")   
+                    d.write(place4+","+"2"+'\n')
                     d.close
                 if block_pick == 3:
                     voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
-                    place=self.position
-                    typea= self.texture
-                    d = open("placed","a")
-                    d.write(str(place)+","+str(self.texture)+'\n')
+                    place=self.position+mouse.normal
+                    place1=str(place)
+                    place2=place1.replace("Vec3","")
+                    place3=place2.replace("(","")
+                    place4=place3.replace(")","")
+                    d = open("placed","a")   
+                    d.write(place4+","+"3"+'\n')
                     d.close
                 if block_pick == 4: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
-                    place=self.position
-                    typea= self.texture
-                    d = open("placed","a")
-                    d.write(str(place)+","+str(self.texture)+'\n')
+                    place=self.position+mouse.normal
+                    place1=str(place)
+                    place2=place1.replace("Vec3","")
+                    place3=place2.replace("(","")
+                    place4=place3.replace(")","")
+                    d = open("placed","a")   
+                    d.write(place4+","+"4"+'\n')
                     d.close
                 if block_pick == 5: 
                     voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
-                    place=self.position
-                    typea= self.texture
-                    d = open("placed","a")
-                    d.write(str(place)+","+str(self.texture)+'\n')
+                    place=self.position+mouse.normal
+                    place1=str(place)
+                    place2=place1.replace("Vec3","")
+                    place3=place2.replace("(","")
+                    place4=place3.replace(")","")
+                    d = open("placed","a")   
+                    d.write(place4+","+"5"+'\n')
                     d.close
                 if block_pick == 6: 
                     voxel = pendulum(position = self.position+mouse.normal, texture = pendulum_texture)
-                    place=self.position
-                    typea= self.texture
-                    d = open("placed","a")
-                    d.write(str(place)+","+str(self.texture)+'\n')
+                    place=self.position+mouse.normal
+                    place1=str(place)
+                    place2=place1.replace("Vec3","")
+                    place3=place2.replace("(","")
+                    place4=place3.replace(")","")
+                    d = open("placed","a")   
+                    d.write(place4+","+"6"+'\n')
                     d.close
             if key == 'right mouse down':
                 
                 punch_sound.play()
                 typeb=self.texture
                 destroy(self)
-                pl.write(str(place)+","+str(typeb)+'\n')
+               # pl.write(str(place)+","+str(typeb)+'\n')
                 
 
 
@@ -613,12 +630,43 @@ def terrainGen():
    # voxel=Voxel(position = Vec3(res), texture=grass_texture)
     
     with open("placed","r") as file:
+        global Blob
         myList=[]
+        #Can't just declare Blob as a variable so Blob has a default texture
+        Blob=grass_texture
         for line in file:
             myList.append(line.rstrip())
-            res=tuple(map(int, myList[0].split(',')))
-            voxel=Voxel(position=Vec3(res),texture=stone_texture)
+        a=0
+        for x in myList:
+         if not myList[a]=='':
+          res=tuple(map(int, myList[a].split(',')))
+          byList=res[:3]
+          textre=res[3]
+          a=a+1
+          #This changes the texture of the block based off the save file
+          match textre:
+              case 1:
+                  Blob=grass_texture
+                  Greg=Voxel
+              case 2:
+                  Blob=stone_texture
+                  Greg=Voxel
+              case 3:
+                  Blob=brick_texture
+                  Greg=Voxel
+              case 4:
+                  Blob=dirt_texture
+                  Greg=Voxel
+              case 5:
+                  Blob=sun_texture
+                  Greg=solarSystem
+              case 6:
+                  Blob=pendulum_texture
+                  Greg=pendulum
+          voxel=Greg(position=Vec3(byList),texture=Blob)
+        
     
+
 
 terrainGen()
 
