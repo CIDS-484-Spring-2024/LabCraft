@@ -6,12 +6,8 @@ window.borderless = False
 
 d = open("placed", "a")
 d.close()
-pl = open("destroyed", "w")
-pl.write("Position"+" "+"type"+'\n')
-d = open("placed", "r")
-Chad=d.readline()
-print("Here! ---------------------")
-print(Chad)
+pl = open("destroyed", "a")
+pl.close()
 app = Ursina()
 
 # block textures
@@ -446,7 +442,10 @@ class Voxel(Button):
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
                     d = open("placed","a")   
-                    d.write(place4+","+"1"+'\n')
+                    #place4 is the position stripped just to a tupple
+                    #the middle digit is the block type which is used in the match case statement in the terrain instantiation
+                    #the final digit is just used as a boolean for placed, or destroyed
+                    d.write(place4+","+"1"+","+"1"+'\n')
                     d.close
                     
                    
@@ -458,7 +457,7 @@ class Voxel(Button):
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
                     d = open("placed","a")   
-                    d.write(place4+","+"2"+'\n')
+                    d.write(place4+","+"2"+","+"1"+'\n')
                     d.close
                 if block_pick == 3:
                     voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
@@ -468,7 +467,7 @@ class Voxel(Button):
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
                     d = open("placed","a")   
-                    d.write(place4+","+"3"+'\n')
+                    d.write(place4+","+"3"+","+"1"+'\n')
                     d.close
                 if block_pick == 4: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
@@ -478,7 +477,7 @@ class Voxel(Button):
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
                     d = open("placed","a")   
-                    d.write(place4+","+"4"+'\n')
+                    d.write(place4+","+"4"+","+"1"+'\n')
                     d.close
                 if block_pick == 5: 
                     voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
@@ -488,7 +487,7 @@ class Voxel(Button):
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
                     d = open("placed","a")   
-                    d.write(place4+","+"5"+'\n')
+                    d.write(place4+","+"5"+","+"1"+'\n')
                     d.close
                 if block_pick == 6: 
                     voxel = pendulum(position = self.position+mouse.normal, texture = pendulum_texture)
@@ -498,14 +497,37 @@ class Voxel(Button):
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
                     d = open("placed","a")   
-                    d.write(place4+","+"6"+'\n')
+                    d.write(place4+","+"6"+","+"1"+'\n')
                     d.close
             if key == 'right mouse down':
-                
+                global typea
                 punch_sound.play()
                 typeb=self.texture
+                typea=0
+                print(type(typeb))
+                match typeb:
+                    case "grass_block.png":
+                        typea=1
+                    case "stone_block.png":
+                        typea=2
+                    case "brick_block.png":
+                        typea=3
+                    case "dirt_block.png":
+                        typea=4
+                    case "sun.png":
+                        typea=5
+                    case "pend_block.png":
+                        typea=6
+ 
+                place=self.position
+                place1=str(place)
+                place2=place1.replace("Vec3","")
+                place3=place2.replace("(","")
+                place4=place3.replace(")","")
+                d = open("placed","a")  
+                d.write(place4+","+str(typea)+","+"0"+'\n')
+                d.close
                 destroy(self)
-               # pl.write(str(place)+","+str(typeb)+'\n')
                 
 
 
@@ -642,6 +664,7 @@ def terrainGen():
           res=tuple(map(int, myList[a].split(',')))
           byList=res[:3]
           textre=res[3]
+          PLOD=res[4]
           a=a+1
           #This changes the texture of the block based off the save file
           match textre:
@@ -663,7 +686,27 @@ def terrainGen():
               case 6:
                   Blob=pendulum_texture
                   Greg=pendulum
-          voxel=Greg(position=Vec3(byList),texture=Blob)
+          if PLOD==1:
+           voxel=Greg(position=Vec3(byList),texture=Blob)
+        #  if PLOD==0:
+          #   print("Not Placed")
+         
+         #"""
+     #with open("destroyed","r") as file:
+      #  tyList=[]
+        #for line in file:
+          #  tyList.append(line.rstrip())
+            
+       # a=0
+       # for x in tyList:
+        #    if not tyList[a]=='':
+         #       res=tuple(map(int, tyList[a].split(',')))
+         #       ryList=res[:3]
+              
+         #       a=a+1
+#
+      # """
+          
         
     
 

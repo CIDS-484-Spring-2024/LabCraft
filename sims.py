@@ -4,8 +4,6 @@ from ursina import *
 
 f = open("Pendulum", "w") 
 p = open("Planet", "w")
-z =open("Z", "w")
-z.write("testing")
 f.write("time "+"oscilations "+'\n')
 T=0
 Z=0
@@ -32,9 +30,6 @@ def simple_pendulum(self):
  angle= self.Amp*math.sin(2*math.pi*freq*self.t)
  self.pendulum.y=self.position.y
  self.pendulum.z=self.position.z
- #self.pendulum.y = math.sin(self.t)+self.position.y
- #self.pendulum.z = -math.cos(self.t)+self.position.z
  self.pendulum.rotation = Vec3(angle,0,0)
- format=self.pendulum.rotation[0]/360
- f.write(str(T)+","+str(round(format,2))+"\n")
- z.write(str(self.Amp)+"\n")
+ format=angle
+ f.write(str(round(self.t,2))+","+str(round(format,2))+"\n")
