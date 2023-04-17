@@ -574,15 +574,28 @@ class pendulum(Button):
         self.pendulum = Entity(model = "pendulum", collider = "mesh", texture = "mc_brick.png", scale = 0.1)
         #Start of the logic for the amplitude change
         global Box
+        global Rox
         Box = InputField()
+        Rox = InputField(y=.1)
         global BOB
+        global ROB
         BOB = Button(scale=.05, x=-.4)
+        ROB = Button(scale=.05, x=-.4, y=.1)
         BOB.tooltip = Tooltip("Enter an Amplitude, then click me")
+        ROB.tooltip = Tooltip("Enter a Frequency, then click me")
+      
+       
         #The game state changes so the cursor is free to move
         global game_state
         game_state = 3
+        global x
+        x=0
         global Amp
         global amp
+        global Freq
+        global freq
+        freq=0
+        self.Freq = .5
         amp=0
         #self.Amp is a universal variable touches all the files
         self.Amp=20
@@ -593,6 +606,9 @@ class pendulum(Button):
         global amp
         global Amp
         global BOB
+        global ROB
+        global Freq
+        global freq
         global Box
         simple_pendulum(self)
         
@@ -603,18 +619,39 @@ class pendulum(Button):
         #This method does all the heavy lifting for converting the user input   
         def Rtrn():
             global BOB
+            global ROB
             global game_state
             global amp
             global Box
+            global x
             amp=int(float(Box.text))
             self.Amp=amp
+            x=x+1
+            print(x)
             destroy(Box)
             destroy(BOB)
-            game_state=1
+            
+            
+
+        def Retrn():
+            global ROB
+            global Rox
+            global freq
+            global x
+            freq=int(float(Rox.text))
+            self.Freq=freq
+            destroy(Rox)
+            destroy(ROB)
+            x=x+1
+            print(x)
         global BOB
         #calls method above
         BOB.on_click = Rtrn
-        
+        ROB.on_click = Retrn
+        global x
+        if x>=2:
+            global game_state
+            game_state=1        
             
     
           

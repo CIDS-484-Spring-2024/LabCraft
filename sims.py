@@ -27,7 +27,7 @@ def simple_pendulum(self):
  angle=0
  self.pendulum.x = self.position.x+.7
  #do not fricking delete the self.Amp variable I put a lot of work into making that work
- angle= self.Amp*math.sin(2*math.pi*freq*self.t)
+ angle= self.Amp*math.sin(2*math.pi*self.Freq*self.t)
  self.pendulum.y=self.position.y
  self.pendulum.z=self.position.z
  self.pendulum.rotation = Vec3(angle,0,0)
