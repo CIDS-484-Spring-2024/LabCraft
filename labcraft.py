@@ -73,10 +73,14 @@ def update():
     # === Game States ===
 
     if held_keys['e']:
+        global x
+        x=0
         game_state = 2
         
     
     if held_keys['q']:
+        
+        x=2
         game_state = 1
     if game_state == 1: # main game state
         player.enabled = True
