@@ -672,6 +672,7 @@ class solarSystem(Button):
             scale = .5)
 
         self.planet = Entity(model="assets/block", scale= 0.1, texture = earth_texture)
+        self.moon = Entity(model="assets/block", scale=.01, texture = stone_texture)
         self.t = 0.0
 
     def update(self):

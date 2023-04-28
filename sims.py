@@ -19,7 +19,7 @@ T=0
 def oscSim(self):
  self.t += time.dt
  self.planet.x = math.cos(.5*(self.t)) + self.position.x
- self.planet.y = self.position.y-.4
+ self.planet.y = self.position.y
  #self.planet.rotation is used just for QOL purposes
  #it makes the planet rotate, does nothing else
  #to quote Marge Simpson "I just think it's neat"
@@ -28,6 +28,9 @@ def oscSim(self):
  global T
  p.write(str(T)+","+str(round(self.planet.z,2))+","+str(round(self.planet.x,2))+"\n")
  T=T+1
+ self.moon.z=math.sin(1*(self.t)) + self.planet.z-.1
+ self.moon.x=math.cos(1*(self.t)) + self.planet.x-.1
+ self.moon.y=self.position.y
 def simple_pendulum(self):
  self.t += time.dt
  #freq and amp have default values, that are changed
