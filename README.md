@@ -62,7 +62,11 @@ python labcraft.py
 
 - assets:
   Folder that contains all of the models, textures and audio files.
+<<<<<<< HEAD
 # NEW FEATURES:
+=======
+ # NEW FEATURES:
+>>>>>>> refs/remotes/origin/main
  -WRITE VALUES TO A FILE ON YOUR COMPUTER WITH THE PLANET AND PENDULUM SIM,
     SO YOU CAN CHART AND GRAPH, OR GRAPH AND CHART IF YOU'RE CANADIAN
     
@@ -75,4 +79,9 @@ python labcraft.py
  -THE EARTH ROTATES!!! LEON FOUCAULT EAT YOUR HEART OUT
  
  -SOME MINOR QOL CHANGES, YOU CAN NO LONGER CLIMB INFINATELY AND THE INVENTORY
+<<<<<<< HEAD
     STACK ISSUE IS BEING WORKED ON.
+=======
+    STACK ISSUE IS BEING WORKED ON.
+
+>>>>>>> refs/remotes/origin/main
