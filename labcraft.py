@@ -506,9 +506,9 @@ class Voxel(Button):
             if key == 'right mouse down':
                 global typea
                 punch_sound.play()
-                typeb=self.texture
+                typeb=str(self.texture)
                 typea=0
-                print(type(typeb))
+                print((typeb))
                 match typeb:
                     case "grass_block.png":
                         typea=1
@@ -688,9 +688,6 @@ def terrainGen():
     for z in range(20):
         for x in range(20):
             voxel = Voxel(position = (x,-1,z))
-    #test_string ="1,1,1"
-  #  res=tuple(map(int, test_string.split(',')))
-   # voxel=Voxel(position = Vec3(res), texture=grass_texture)
     
     with open("placed","r") as file:
         global Blob
@@ -700,14 +697,16 @@ def terrainGen():
         for line in file:
             myList.append(line.rstrip())
         a=0
+        tyList=[]
         for x in myList:
          if not myList[a]=='':
           res=tuple(map(int, myList[a].split(',')))
+          tyList.append(res)
           byList=res[:3]
           textre=res[3]
           PLOD=res[4]
           a=a+1
-          #This changes the texture of the block based off the save file
+          #This changes the texture of the block based off of the 4 digit of the tuples in the save file
           match textre:
               case 1:
                   Blob=grass_texture
@@ -729,29 +728,6 @@ def terrainGen():
                   Greg=pendulum
           if PLOD==1:
            voxel=Greg(position=Vec3(byList),texture=Blob)
-        #  if PLOD==0:
-          #   print("Not Placed")
-         
-         #"""
-     #with open("destroyed","r") as file:
-      #  tyList=[]
-        #for line in file:
-          #  tyList.append(line.rstrip())
-            
-       # a=0
-       # for x in tyList:
-        #    if not tyList[a]=='':
-         #       res=tuple(map(int, tyList[a].split(',')))
-         #       ryList=res[:3]
-              
-         #       a=a+1
-#
-      # """
-          
-        
-    
-
-
 terrainGen()
 
 player = FirstPersonController()
