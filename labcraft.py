@@ -4,10 +4,10 @@ from sims import *
 
 window.borderless = False
 
+#d is the csv file object that is used for the save system
 d = open("placed", "a")
 d.close()
-pl = open("destroyed", "a")
-pl.close()
+
 app = Ursina()
 
 # block textures
@@ -27,7 +27,7 @@ sun_icon_texture = load_texture('assets/sun_icon.png')
 pendulum_icon_texture = load_texture('assets/mc_brick_icon.png')
 
 # other textures
-sky_texture   = load_texture('assets/skybox.png')
+sky_texture   = load_texture('assets/skyAmpInput.png')
 arm_texture   = load_texture('assets/arm_texture.png')
 osc_texture   = load_texture('assets/osc_block.png')
 earth_texture = load_texture('assets/earth_block.png')
@@ -98,7 +98,10 @@ def update():
         inventory_BG.enabled = True
         inventory.enabled = True
     
-    if game_state == 3: #This logic is for the pendulum
+    #game_state 3 is used for the in game pedulumn Amp/Freq changes
+    #this is needed as it frees the cursor from the camera
+    #so the player can click the buttons and input field
+    if game_state == 3: 
         player.enabled = False
         inventory_BG.enabled = False
         inventory.enabled = False
@@ -439,11 +442,16 @@ class Voxel(Button):
 
                 if block_pick == 1: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
-                #this is for potential save state idea
+                    #this next bit is for the save system
+                    #first the position of the voxel is set to the variable place
                     place=self.position+mouse.normal
+                    #place is then cacacanated to a string
                     place1=str(place)
+                    #the position is then stripped of the Vec3 leaving just (tuple)
                     place2=place1.replace("Vec3","")
+                    #it's then stripped of one bracket
                     place3=place2.replace("(","")
+                    #then the next
                     place4=place3.replace(")","")
                     d = open("placed","a")   
                     #place4 is the position stripped just to a tupple
@@ -455,6 +463,7 @@ class Voxel(Button):
                    
                 if block_pick == 2: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = stone_texture)
+                    #exact same logic as the grass block
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -465,6 +474,7 @@ class Voxel(Button):
                     d.close
                 if block_pick == 3:
                     voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
+                    #exact same logic as the grass block
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -475,6 +485,7 @@ class Voxel(Button):
                     d.close
                 if block_pick == 4: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
+                    #exact same logic as the grass block
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -485,6 +496,7 @@ class Voxel(Button):
                     d.close
                 if block_pick == 5: 
                     voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
+                    #exact same logic as the grass block
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -495,6 +507,7 @@ class Voxel(Button):
                     d.close
                 if block_pick == 6: 
                     voxel = pendulum(position = self.position+mouse.normal, texture = pendulum_texture)
+                    #exact same logic as the grass block
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -506,7 +519,10 @@ class Voxel(Button):
             if key == 'right mouse down':
                 global typea
                 punch_sound.play()
+                #self.texture is cacatenated to string and then set to typeb
                 typeb=str(self.texture)
+                #typea is an int that is used with a matchcase to set typeb to a number
+                #using the match case below this is used later in the code with the placing/destroying logic
                 typea=0
                 print((typeb))
                 match typeb:
@@ -522,7 +538,8 @@ class Voxel(Button):
                         typea=5
                     case "pend_block.png":
                         typea=6
- 
+
+                #exact same as the logic used for stripping the position of the placed blocks to a tuple
                 place=self.position
                 place1=str(place)
                 place2=place1.replace("Vec3","")
@@ -577,21 +594,25 @@ class pendulum(Button):
         self.t = 0.0
         self.pendulum = Entity(model = "pendulum", collider = "mesh", texture = "mc_brick.png", scale = 0.1)
         #Start of the logic for the amplitude change
-        global Box
-        global Rox
-        Box = InputField()
-        Rox = InputField(y=.1)
-        global BOB
-        global ROB
-        BOB = Button(scale=.05, x=-.4)
-        ROB = Button(scale=.05, x=-.4, y=.1)
-        BOB.tooltip = Tooltip("Enter an Amplitude, then click me")
-        ROB.tooltip = Tooltip("Enter a Frequency, then click me")
+        global AmpInput
+        global FreqInput
+        #These are input fields for the Amplitude and Frequency Changes in game
+        AmpInput = InputField()
+        FreqInput = InputField(y=.1)
+        global AmpButt
+        global FreqButt
+        #These are the Buttons used for confirming Amplitude and Frequency
+        AmpButt = Button(scale=.05, x=-.4)
+        FreqButt = Button(scale=.05, x=-.4, y=.1)
+        AmpButt.tooltip = Tooltip("Enter an Amplitude, then click me")
+        FreqButt.tooltip = Tooltip("Enter a Frequency, then click me")
       
        
         #The game state changes so the cursor is free to move
         global game_state
         game_state = 3
+        #x is used as an incrementing value, once the buttons are clicked x increments by one
+        #once it reaches 2 the gamestate is set back to 1 and the game continues
         global x
         x=0
         global Amp
@@ -609,11 +630,11 @@ class pendulum(Button):
     def update(self):
         global amp
         global Amp
-        global BOB
-        global ROB
+        global AmpButt
+        global FreqButt
         global Freq
         global freq
-        global Box
+        global AmpInput
         simple_pendulum(self)
         
         Amp=20
@@ -621,37 +642,40 @@ class pendulum(Button):
             destroy(self.pendulum)        
             destroy(self)
         #This method does all the heavy lifting for converting the user input   
+        #Rtrn is used for the Amplitude
         def Rtrn():
-            global BOB
-            global ROB
+            global AmpButt
+            global FreqButt
             global game_state
             global amp
-            global Box
+            global AmpInput
             global x
-            amp=int(float(Box.text))
+            #it sets whatever is in the inputfield to amp which is an int
+            amp=int(float(AmpInput.text))
+            #it then sets Amp which is an object which is then used in the sims file to set the Amplitude
+            #to the user input
             self.Amp=amp
             x=x+1
-            print(x)
-            destroy(Box)
-            destroy(BOB)
+            destroy(AmpInput)
+            destroy(AmpButt)
             
             
 
         def Retrn():
-            global ROB
-            global Rox
+            #the exact same as the method above but for the frequency
+            global FreqButt
+            global FreqInput
             global freq
             global x
-            freq=int(float(Rox.text))
+            freq=int(float(FreqInput.text))
             self.Freq=freq
-            destroy(Rox)
-            destroy(ROB)
+            destroy(FreqInput)
+            destroy(FreqButt)
             x=x+1
-            print(x)
-        global BOB
+        global AmpButt
         #calls method above
-        BOB.on_click = Rtrn
-        ROB.on_click = Retrn
+        AmpButt.on_click = Rtrn
+        FreqButt.on_click = Retrn
         global x
         if x>=2:
             global game_state
@@ -672,6 +696,7 @@ class solarSystem(Button):
             scale = .5)
 
         self.planet = Entity(model="assets/block", scale= 0.1, texture = earth_texture)
+        #here's my moon I like it it's a nice moon
         self.moon = Entity(model="assets/block", scale=.01, texture = stone_texture)
         self.t = 0.0
 
@@ -689,46 +714,60 @@ def terrainGen():
     for z in range(20):
         for x in range(20):
             voxel = Voxel(position = (x,-1,z))
-    
+
+    #here is the start of the save system logic
+    #first the placed file is opened and read
     with open("placed","r") as file:
-        global Blob
-        myList=[]
-        #Can't just declare Blob as a variable so Blob has a default texture
-        Blob=grass_texture
+        #then a default texture is defined with 
+        global Text
+        #then a blank list is declared
+        placeList=[]
+        #Can't just declare Text as a variable so Text has a default texture
+        Text=grass_texture
         for line in file:
-            myList.append(line.rstrip())
+            #the blank list is then appended with the lines in the file
+            placeList.append(line.rstrip())
+        #a is used to step through the list
         a=0
-        tyList=[]
-        for x in myList:
-         if not myList[a]=='':
-          res=tuple(map(int, myList[a].split(',')))
-          tyList.append(res)
-          byList=res[:3]
+        #another blank list is then declared as the previous list was read in as
+        #strings
+        saveList=[]
+        for x in placeList:
+         if not placeList[a]=='':
+          #and the new List is appended with tupples mapped from the string and split with the , delimiter
+          res=tuple(map(int, placeList[a].split(',')))
+          saveList.append(res)
+          #the position of the block is then based off the first 3 numbers of each tupple
+          savePOS=res[:3]
+          #the texture is the 4th number
           textre=res[3]
-          PLOD=res[4]
+          #and the status is the 5th number
+          PlaceOrDes=res[4]
           a=a+1
-          #This changes the texture of the block based off of the 4 digit of the tuples in the save file
+          #This changes the texture of the block based off of the 4th digit of the tuples in the save file
           match textre:
               case 1:
-                  Blob=grass_texture
+                  Text=grass_texture
                   Greg=Voxel
               case 2:
-                  Blob=stone_texture
+                  Text=stone_texture
                   Greg=Voxel
               case 3:
-                  Blob=brick_texture
+                  Text=brick_texture
                   Greg=Voxel
               case 4:
-                  Blob=dirt_texture
+                  Text=dirt_texture
                   Greg=Voxel
               case 5:
-                  Blob=sun_texture
+                  Text=sun_texture
                   Greg=solarSystem
               case 6:
-                  Blob=pendulum_texture
+                  Text=pendulum_texture
                   Greg=pendulum
-          if PLOD==1:
-           voxel=Greg(position=Vec3(byList),texture=Blob)
+          #as long as PlaceOrDes is 1 the block is placed
+          if PlaceOrDes==1:
+           voxel=Greg(position=Vec3(savePOS),texture=Text)
+           #there is more to come with this
 terrainGen()
 
 player = FirstPersonController()
