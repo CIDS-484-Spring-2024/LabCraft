@@ -2,7 +2,7 @@ from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 
-window.borderless = False
+window.borderless = True
 
 #d is the csv file object that is used for the save system
 d = open("placed", "a")
@@ -17,6 +17,8 @@ brick_texture = load_texture('assets/brick_block.png')
 dirt_texture  = load_texture('assets/dirt_block.png')
 sun_texture   = load_texture('assets/sun.png')
 pendulum_texture = load_texture('assets/mc_brick.png')
+#apple texture loaded from the assets folder
+apple_texture  = load_texture('assets/apple_block.png')
 
 # inventory menu icon textures
 grass_icon_texture = load_texture('assets/grass_icon.png')
@@ -25,6 +27,8 @@ brick_icon_texture = load_texture('assets/brick_icon.png')
 dirt_icon_texture = load_texture('assets/dirt_icon.png')
 sun_icon_texture = load_texture('assets/sun_icon.png')
 pendulum_icon_texture = load_texture('assets/mc_brick_icon.png')
+#apple icon loaded from the assets folder
+apple_icon_texture = load_texture('assets/apple_icon.png')
 
 # other textures
 sky_texture   = load_texture('assets/skyAmpInput.png')
@@ -47,6 +51,7 @@ punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
  4: dirt
  5: sun
  6: pendulum
+ 7: apple
  """
 block_pick = 0 # default empty hand
 
@@ -184,6 +189,8 @@ class InvItem(Draggable):
         if self.ID == 4: self.texture = dirt_icon_texture
         if self.ID == 5: self.texture = sun_icon_texture
         if self.ID == 6: self.texture = pendulum_icon_texture
+        #tells the hotbar/inventory to load the apple icon
+        if self.ID == 7: self.texture = apple_icon_texture
 
     def drag(self):
         self.xy_pos = (self.x, self.y) # store current position
@@ -516,6 +523,11 @@ class Voxel(Button):
                     d = open("placed","a")   
                     d.write(place4+","+"6"+","+"1"+'\n')
                     d.close
+                #tells the game to load the apple block
+                if block_pick == 7:
+                    voxel = apple(position = self.position+mouse.normal, texture = apple_texture)
+               
+
             if key == 'right mouse down':
                 global typea
                 punch_sound.play()
@@ -682,8 +694,29 @@ class pendulum(Button):
             game_state=1        
             
     
-          
-    
+#here is the class for the apple sim   
+class apple(Button):
+    def __init__(self, position = (0,0,0), texture = texture):
+        super().__init__(
+            parent = scene,
+            position = position,
+            model = 'assets/block',
+            #because the button class position is unchangeable, you have to create a child
+            #so I just changed the size of the button and that seemed to work, as you can't see the apple
+            #button but you can see the child apple
+            scale = .00000000000000001,
+            )
+        self.apple = Entity(model="assets/block", scale=0.1,texture=apple_texture)
+        #this variable is used in the sims file for time
+        self.t=0.0
+        
+            
+    def update(self):
+        apple_sim(self)
+        print(self.apple.y)
+        #this destroys the block to prevent memory overflow
+        if self.apple.y <= -10:
+                destroy(self)
 class solarSystem(Button):
     def __init__(self, position = (0,0,0), texture = sun_texture):
         super().__init__(
@@ -788,5 +821,7 @@ test_item3 = InvItem(inventory, hotbar, 3, inventory.find_free_cell())
 test_item4 = InvItem(inventory, hotbar, 4, inventory.find_free_cell())
 test_item5 = InvItem(inventory, hotbar, 5, inventory.find_free_cell())
 test_item6 = InvItem(inventory, hotbar, 6, inventory.find_free_cell())
+#this fills the inventory with a blank slot so the apple can be placed in there
+test_item7 = InvItem(inventory, hotbar, 7, inventory.find_free_cell())
 
 app.run()

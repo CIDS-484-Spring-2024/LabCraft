@@ -56,3 +56,15 @@ def simple_pendulum(self):
  #if you want to change any variable for the file, just delete the variable that is inside the 
  #(round(EXAMPLE,2)) code.
  f.write(str(round(self.t,2))+","+str(round(format,2))+"\n")
+#beginning of apple sim
+def apple_sim(self):
+  
+  self.t += time.dt
+  #x and z are the same as the button
+  self.apple.x=self.position.x
+  self.apple.z=self.position.z
+  #y starts higher then the button so players can get a better look as the apple falls
+  self.apple.y=3-self.t
+  
+  
+  

@@ -1,0 +1,9 @@
+numpy==1.24.2
+Panda3D==1.10.13
+panda3d-gltf==0.13
+panda3d-simplepbr==0.10
+Pillow==9.4.0
+pygame==2.3.0
+pyperclip==1.8.2
+ursina==5.2.0
+screeninfo==0.6.7
