@@ -3,6 +3,7 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 
 window.borderless = True
+mouse.locked = True
 
 #d is the csv file object that is used for the save system
 d = open("placed", "a")
@@ -29,17 +30,32 @@ sun_icon_texture = load_texture('assets/sun_icon.png')
 pendulum_icon_texture = load_texture('assets/mc_brick_icon.png')
 #apple icon loaded from the assets folder
 apple_icon_texture = load_texture('assets/apple_icon.png')
-
+cannon_icon_texture = load_texture('assets/cannon_icon.png')
+while_icon_texture = load_texture('assets/while_icon')
 # other textures
-sky_texture   = load_texture('assets/skyAmpInput.png')
+space_texture=load_texture('assets/space_block.png')
+sky_texture   = load_texture('assets/skybox.png')
+night_sky_texture = load_texture('assets/nightskybox')
 arm_texture   = load_texture('assets/arm_texture.png')
 osc_texture   = load_texture('assets/osc_block.png')
 earth_texture = load_texture('assets/earth_block.png')
+jupiter_texture = load_texture('assets/jupiter_block.png')
+mercury_texture = load_texture('assets/mercury_block.png')
+venus_texture = load_texture('assets/venus_block.png')
+mars_texture = load_texture('assets/mars_block.png')
+neptune_texture = load_texture('assets/neptune_block.png')
+uranus_texture = load_texture('assets/uranus_block.png')
+pluto_texture = load_texture('assets/pluto_block.png')
+force_vector_icon_texture = load_texture('assets/FV_icon.png')
 mc_brick      = load_texture('assets/mc_brick.png')
 hotbar_cursor_texture = load_texture('assets/hotbar_cursor.png')
 
 # sound effects
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
+boom_sound = Audio('assets/BOOM', loop= False, autoplay=False)
+global Night
+Night=1
+
 
 
 """ 
@@ -61,37 +77,41 @@ block_pick = 0 # default empty hand
  2: inventory menu screen
  """
 global game_state
-game_state = 1 
-
+game_state = 1
 
 window.fps_counter.enabled = True
 window.exit_button.visible = True
 
 debug = True
 
-#voxel = Voxel(position = Vec3(17,1,10), texture = grass_texture)
+
+
 def update():
     global block_pick
     global game_state
+    
     global debug
+    global Night
+    
 
     # === Game States ===
-
+  
     if held_keys['e']:
         global x
         x=0
         game_state = 2
         
     
-    if held_keys['q']:
+    if held_keys['q'] and game_state == 2 :
         
         x=2
         game_state = 1
+    
     if game_state == 1: # main game state
         player.enabled = True
         inventory_BG.enabled = False
         inventory.enabled = False
-
+      
         # animate the hand to move back and forth when clicked
         if held_keys['left mouse'] or held_keys['right mouse']:
             hand.active()
@@ -102,7 +122,7 @@ def update():
         player.enabled = False
         inventory_BG.enabled = True
         inventory.enabled = True
-    
+
     #game_state 3 is used for the in game pedulumn Amp/Freq changes
     #this is needed as it frees the cursor from the camera
     #so the player can click the buttons and input field
@@ -110,6 +130,11 @@ def update():
         player.enabled = False
         inventory_BG.enabled = False
         inventory.enabled = False
+    if game_state == 4:
+        player.enabled = True
+        inventory_BG.enabled = False
+        inventory.enabled = False
+        Sky.texture=night_sky_texture
     if held_keys['escape']: 
         quit()
     
@@ -191,6 +216,9 @@ class InvItem(Draggable):
         if self.ID == 6: self.texture = pendulum_icon_texture
         #tells the hotbar/inventory to load the apple icon
         if self.ID == 7: self.texture = apple_icon_texture
+        if self.ID == 8: self.texture = cannon_icon_texture
+        if self.ID == 9: self.texture = while_icon_texture
+        if self.ID == 10: self.texture = force_vector_icon_texture
 
     def drag(self):
         self.xy_pos = (self.x, self.y) # store current position
@@ -364,7 +392,7 @@ class Hotbar(Grid):
 
         # use the slot number to reference the corresponding cell in the list
         target_cell = all_cells[self.current_slot]
-
+        
         # set the block_pick as the ID of the child that overlaps that cell
         if self.children: # if the hotbar has any children, aka if it's not NULL
             for child in self.children:
@@ -426,7 +454,7 @@ class HotbarCursor(Entity):
 
 
 class Voxel(Button):
-    def __init__(self, position = (0,0,0), texture = grass_texture):
+    def __init__(self, position = (0,0,0), texture = grass_texture or space_texture):
         super().__init__(
             parent = scene,
             position = position,
@@ -435,6 +463,10 @@ class Voxel(Button):
             texture = texture,
             color = color.color(0,0,random.uniform(0.9,1)),
             scale = 0.5)
+        if game_state==1:
+            self.texture=grass_texture
+        if game_state==4:
+            self.texture=space_texture
 
     def input(self,key):
         # if the current block is being hovered on by the mouse
@@ -504,6 +536,7 @@ class Voxel(Button):
                 if block_pick == 5: 
                     voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
                     #exact same logic as the grass block
+                    
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -525,7 +558,15 @@ class Voxel(Button):
                     d.close
                 #tells the game to load the apple block
                 if block_pick == 7:
-                    voxel = apple(position = self.position+mouse.normal, texture = apple_texture)
+                    voxel = apple(position = self.position+mouse.normal)
+                if block_pick==8:
+                    voxel = cannon(position =self.position+mouse.normal)
+                if block_pick==9:
+                    voxel = whileloop(position = self.position + mouse.normal)
+                  
+
+                if block_pick==10:
+                    voxel = FVSim(position=self.position + mouse.normal)
                
 
             if key == 'right mouse down':
@@ -565,13 +606,30 @@ class Voxel(Button):
 
 
 class Sky(Entity):
+    global Night
     def __init__(self):
         super().__init__(
             parent = scene,
             model = 'sphere',
-            texture = sky_texture,
+           
+            texture=sky_texture or night_sky_texture,
             scale = 150,
             double_sided = True)
+        if game_state==1:
+            self.texture=sky_texture
+        if game_state==4:
+            self.texture=night_sky_texture
+    def update(self):
+        
+        if held_keys["l"]:
+            self.texture=night_sky_texture
+        
+       
+
+        
+
+
+    
 
 
 class Hand(Entity):
@@ -589,8 +647,102 @@ class Hand(Entity):
 
     def passive(self):
         self.position = Vec2(0.4,-0.6)
-
-
+class whileloop(Button):
+    def __init__(self, position = (0,0,0),collider="none"):
+        super().__init__(
+            parent = scene,
+            position = position,
+            model = 'assets/block',
+            scale = .5
+        
+            )
+        self.block=Entity(model='assets/block', scale=.5, color = color.red)
+        self.block.x=self.x 
+        self.block.y=self.y+.5
+        self.block.z=self.z 
+        self.y=-2
+        self.player=player
+        self.t=0
+        self.Sky=Sky
+        self.night=night_sky_texture
+    def update(self):
+        while_sim(self)
+        if self.block.hovered and held_keys['right mouse']:
+            destroy(self)
+            destroy(self.block)
+       
+class FVSim(Button):
+    
+    def __init__(self,position=(0,0,0)):
+        super().__init__(
+            parent = scene,
+            position = position,
+            model = 'assets/block',
+            color=color.red,
+            origin_y=0.5,
+            scale = 0.5
+            
+            
+        )
+        self.b=10
+        #self.block=Entity(model='assets/block', scale=.5, color = color.red)
+    def update(self):
+        FV_sim(self)
+        if self.hovered and held_keys['right mouse']:
+            destroy(self)
+class cannon(Button):
+    #q is used as a boolean, I would use a regular Boolean but Ursina
+    #is weird in it's update function
+    global q
+    q = 0
+    def __init__(self,position=(0,0,0)):
+        super().__init__(
+            parent = scene,
+            position = position,
+            #the Cannon is a basic model I designed in blender and imported as a .obj file
+            model = 'assets/Cannon',
+            color = color.gray,
+            origin_y = 0.5,
+            scale = 0.5)
+        #this is the prompt for the user to fire, it has to be a boolean other wise
+        #once it's hovered over it'll never stop being enabled, that lil tidbit was provided
+        #through ChatGPT thanks AI!
+        cannon.tooltip=Tooltip("press F to fire", enabled=False)
+        self.apple = Entity(model="assets/block", scale=0.1,texture=apple_texture,Collider="mesh")
+        self.apple.x=self.position.x
+        self.apple.z=self.position.z-2.3
+        self.apple.y=self.position.y
+        self.t=0.0
+      
+    def update(self):
+        global q
+        
+        if self.hovered:
+            cannon.tooltip.enabled=True
+        if not self.hovered:
+            cannon.tooltip.enabled=False
+       
+        if self.hovered and held_keys['f']:
+            #global q
+            #the reason q is needed is because Ursina doesn't handle single key presses
+            #in the update function very well so pressing f makes q = to 1
+            q=1
+            boom_sound.play()
+        #which triggers the update function
+        if q !=0:
+            cannon_sim(self)
+            
+        #global q
+        #then when the apple is more than 10 blocks away in the z axis
+        #q is reset to 0 the apple is moved back and you can fire again
+        if abs(self.position.z-self.apple.z) >= 10:
+            self.apple.z=self.position.z-2.3
+            self.t=0.0
+            q=0
+        if self.hovered and held_keys['right mouse']:
+            destroy(self)
+            destroy(self.apple)
+    
 class pendulum(Button):
    
     def __init__(self,position=(0,0,0), texture = pendulum_texture):
@@ -696,7 +848,7 @@ class pendulum(Button):
     
 #here is the class for the apple sim   
 class apple(Button):
-    def __init__(self, position = (0,0,0), texture = texture):
+    def __init__(self, position = (0,0,0)):
         super().__init__(
             parent = scene,
             position = position,
@@ -717,8 +869,9 @@ class apple(Button):
         #this destroys the block to prevent memory overflow
         if self.apple.y <= -10:
                 destroy(self)
+                destroy(self.apple)
 class solarSystem(Button):
-    def __init__(self, position = (0,0,0), texture = sun_texture):
+    def __init__(self, position = (0,0,0), texture = uranus_texture):
         super().__init__(
             parent = scene,
             position = position,
@@ -726,26 +879,45 @@ class solarSystem(Button):
             origin_y = 0.5,
             texture = texture,
             color = color.color(0,0,random.uniform(0.9,1)),
-            scale = .5)
-
-        self.planet = Entity(model="assets/block", scale= 0.1, texture = earth_texture)
+            scale = 1)
+            
+        self.mercury = Entity(model="assets/block", scale= 0.08, texture=mercury_texture)
+        self.venus = Entity(model="assets/block", scale= 0.09, texture=venus_texture)
+        self.earth = Entity(model="assets/block", scale= 0.1, texture=earth_texture)
+        self.mars = Entity(model="assets/block", scale= 0.095, texture=mars_texture)
+        self.jupiter = Entity(model="assets/block", scale= 0.4, collider="mesh", texture=jupiter_texture)
+        self.saturn = Entity(model="assets/saturn", scale= 0.15)
+        self.uranus = Entity(model="assets/block", scale= 0.2, texture=uranus_texture)
+        self.neptune = Entity(model="assets/block", scale= 0.3, texture=neptune_texture)
+        self.pluto = Entity(model="assets/block", scale= 0.05, texture=pluto_texture)
         #here's my moon I like it it's a nice moon
         self.moon = Entity(model="assets/block", scale=.01, texture = stone_texture)
         self.t = 0.0
 
     def update(self):
         oscSim(self)
+        self.y=4
         if self.hovered and held_keys['right mouse']:
-            destroy(self.planet)
+            destroy(self.mercury)
+            destroy(self.venus)
+            destroy(self.earth)
+            destroy(self.moon)
+            destroy(self.mars)
+            destroy(self.jupiter)
+            destroy(self.saturn)
+            destroy(self.uranus)
+            destroy(self.neptune)
+            destroy(self.pluto)
             destroy(self)
+
 
 
 
 # === Instantiation ===
 
 def terrainGen():
-    for z in range(20):
-        for x in range(20):
+    for z in range(40):
+        for x in range(40):
             voxel = Voxel(position = (x,-1,z))
 
     #here is the start of the save system logic
@@ -823,5 +995,9 @@ test_item5 = InvItem(inventory, hotbar, 5, inventory.find_free_cell())
 test_item6 = InvItem(inventory, hotbar, 6, inventory.find_free_cell())
 #this fills the inventory with a blank slot so the apple can be placed in there
 test_item7 = InvItem(inventory, hotbar, 7, inventory.find_free_cell())
+#here's the cannon sim blank slot
+test_item8 = InvItem(inventory, hotbar, 8, inventory.find_free_cell())
+test_item9 = InvItem(inventory, hotbar, 9, inventory.find_free_cell())
+test_item10 = InvItem(inventory, hotbar, 10, inventory.find_free_cell())
 
 app.run()

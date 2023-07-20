@@ -5,10 +5,10 @@ from ursina import *
 # based off the values they input for Amplitude and Frequency
 f = open("Pendulum", "w") 
 f.write("time "+"oscilations "+'\n')
-#p writes to the Planet file, so students can graph and chart
+#p writes to the earth file, so students can graph and chart
 #based off of the X position the Z position, and the time it takes to complete
 #them with the System sim
-p = open("Planet", "w")
+p = open("earth", "w")
 p.write("time "+","+"Z-Pos"+","+"X-Pos"+'\n')
 #T is used as an incremental value to represent time in
 #the Solar System file
@@ -18,21 +18,63 @@ T=0
 
 def oscSim(self):
  self.t += time.dt
- self.planet.x = 2*math.cos(.5*(self.t)) + self.position.x
- self.planet.y = self.position.y
- #self.planet.rotation is used just for QOL purposes
- #it makes the planet rotate, does nothing else
+ 
+ self.mercury.x = 2*math.cos(10*(self.t)) + self.position.x
+ self.mercury.y = self.position.y
+ self.mercury.rotation += Vec3(0,1,0)
+ self.mercury.z = 2*math.sin(10*(self.t)) + self.position.z
+
+ self.venus.x = 5*math.cos(self.t) + self.position.x
+ self.venus.y = self.position.y
+ self.venus.rotation += Vec3(0,1,0)
+ self.venus.z = 5*math.sin(self.t) + self.position.z
+
+ self.earth.x = 8*math.cos(.5*(self.t)) + self.position.x
+ self.earth.y = self.position.y
+ #self.earth.rotation is used just for QOL purposes
+ #it makes the earth rotate, does nothing else
  #to quote Marge Simpson "I just think it's neat"
- self.planet.rotation += Vec3(0,1,0)
- self.planet.z = 2*math.sin(.5*(self.t)) + self.position.z
+ self.earth.rotation += Vec3(0,1,0)
+ self.earth.z = 8*math.sin(.5*(self.t)) + self.position.z
+
+ self.mars.x = 11*math.cos(.3*(self.t)) + self.position.x
+ self.mars.y = self.position.y
+ self.mars.rotation += Vec3(0,1,0)
+ self.mars.z = 11*math.sin(.3*(self.t)) + self.position.z
+
+ self.jupiter.x = 14*math.cos(.1*(self.t)) + self.position.x
+ self.jupiter.y = self.position.y
+ self.jupiter.rotation += Vec3(0,1,0)
+ self.jupiter.z = 14*math.sin(.1*(self.t)) + self.position.z
+
+ self.saturn.x = 17*math.cos(.09*(self.t)) + self.position.x
+ self.saturn.y = self.position.y
+ self.saturn.rotation += Vec3(0,1,0)
+ self.saturn.z = 17*math.sin(.09*(self.t)) + self.position.z
+
+ self.uranus.x = 20*math.cos(.06*(self.t)) + self.position.x
+ self.uranus.y = self.position.y
+ self.uranus.rotation += Vec3(0,1,0)
+ self.uranus.z = 20*math.sin(.06*(self.t)) + self.position.z
+
+ self.neptune.x = 23*math.cos(.05*(self.t)) + self.position.x
+ self.neptune.y = self.position.y
+ self.neptune.rotation += Vec3(0,1,0)
+ self.neptune.z = 23*math.sin(.05*(self.t)) + self.position.z
+
+ self.pluto.x = 26*math.cos(.01*(self.t)) + self.position.x
+ self.pluto.y = self.position.y
+ self.pluto.rotation += Vec3(0,1,0)
+ self.pluto.z = 26*math.sin(.01*(self.t)) + self.position.z
+
  global T
- p.write(str(T)+","+str(round(self.planet.z,2))+","+str(round(self.planet.x,2))+"\n")
+ p.write(str(T)+","+str(round(self.earth.z,2))+","+str(round(self.earth.x,2))+"\n")
  T=T+1
- #self.moon rotates around the planet using the exact same code that the earth does
- #but instead of using self.position you use self.planet
+ #self.moon rotates around the earth using the exact same code that the earth does
+ #but instead of using self.position you use self.earth
  #it dips into the sun just a teeny bit, but that keeps it spicy
- self.moon.z= (1/2)*math.sin(1*(self.t)) + self.planet.z
- self.moon.x= (1/2)*math.cos(1*(self.t)) + self.planet.x
+ self.moon.z= (1/2)*math.sin(1*(self.t)) + self.earth.z
+ self.moon.x= (1/2)*math.cos(1*(self.t)) + self.earth.x
  self.moon.y=self.position.y
 def simple_pendulum(self):
  self.t += time.dt
@@ -66,5 +108,27 @@ def apple_sim(self):
   #y starts higher then the button so players can get a better look as the apple falls
   self.apple.y=3-self.t
   
+def cannon_sim(self):
+ self.t += time.dt
+ self.apple.x=self.position.x
+ self.apple.z=self.position.z-2.3-(2700*(self.t)*(self.t))
+ self.apple.y=self.position.y
+def while_sim(self):
+  
+ 
+  if abs(self.player.x-self.block.x)<=.1 and abs(self.player.z-self.block.z)<=.1:
+            self.block.color=color.blue
+            Sky.texture=self.night
+  if abs(self.player.x-self.block.x)>=.1 and abs(self.player.z-self.block.z)>=.1:
+            self.block.color=color.red
+def FV_sim(self):
+    
+    self.x=self.x+time.dt
+    self.z=self.z
+          
+              
+
+            
+
   
   
