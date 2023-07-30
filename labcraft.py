@@ -3,13 +3,17 @@ from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 
 window.borderless = True
-mouse.locked = True
+
 
 #d is the csv file object that is used for the save system
 d = open("placed", "a")
 d.close()
 
 app = Ursina()
+global player
+player = FirstPersonController()
+mouse.locked = True
+window.fullscreen = False
 
 # block textures
 grass_texture = load_texture('assets/grass_block.png')
@@ -20,7 +24,7 @@ sun_texture   = load_texture('assets/sun.png')
 pendulum_texture = load_texture('assets/mc_brick.png')
 #apple texture loaded from the assets folder
 apple_texture  = load_texture('assets/apple_block.png')
-
+invisible_texture=load_texture('assets/invisible_block.png')
 # inventory menu icon textures
 grass_icon_texture = load_texture('assets/grass_icon.png')
 stone_icon_texture = load_texture('assets/stone_icon.png')
@@ -47,14 +51,21 @@ neptune_texture = load_texture('assets/neptune_block.png')
 uranus_texture = load_texture('assets/uranus_block.png')
 pluto_texture = load_texture('assets/pluto_block.png')
 force_vector_icon_texture = load_texture('assets/FV_icon.png')
+Friction_icon_texture = load_texture('assets/Friction_icon.png')
+For_icon_texture = load_texture('assets/For_Loop_Icon.png')
 mc_brick      = load_texture('assets/mc_brick.png')
 hotbar_cursor_texture = load_texture('assets/hotbar_cursor.png')
+#picture ratios are 1.9 to 1
+Slidetexture1=load_texture('assets/Slide1.png')
+Slidetexture2=load_texture('assets/Slide 2.png')
+Slidetexture3=load_texture('assets/Slide 3.png')
 
 # sound effects
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 boom_sound = Audio('assets/BOOM', loop= False, autoplay=False)
 global Night
 Night=1
+
 
 
 
@@ -77,7 +88,7 @@ block_pick = 0 # default empty hand
  2: inventory menu screen
  """
 global game_state
-game_state = 1
+game_state = 2
 
 window.fps_counter.enabled = True
 window.exit_button.visible = True
@@ -85,15 +96,26 @@ window.exit_button.visible = True
 debug = True
 
 
+Bob=Sprite(model="quad", texture="assets/Slide1.png", position=(0,1.25,8))
+CoBoo = Button(scale=(.5,.1), x=-.6,y=-.2,color=color.rgb(189,0,255),text="Start Game")
 
+BooCo = Button(scale=(.3,.1),x=-.7,y=-.3,color=color.rgb(1,255,31),text="Exit Game")
+global slideint
+slideint=0
 def update():
-    global block_pick
     global game_state
-    
+    global block_pick
+    def gamestart():
+        global game_state
+        global ground
+        game_state=1
+        ground==1
     global debug
     global Night
+    tray = raycast(player.position, player.forward, ignore=[player])
     
-
+    
+ 
     # === Game States ===
   
     if held_keys['e']:
@@ -111,7 +133,15 @@ def update():
         player.enabled = True
         inventory_BG.enabled = False
         inventory.enabled = False
-      
+        hand.enabled=True
+        sky.enabled=True
+        hotbar.enabled=True
+        hotbar_BG.enabled=True
+        hotbar_cursor.enabled=True
+        Bob.enabled=False
+        CoBoo.enabled=False
+        BooCo.enabled=False
+
         # animate the hand to move back and forth when clicked
         if held_keys['left mouse'] or held_keys['right mouse']:
             hand.active()
@@ -122,6 +152,7 @@ def update():
         player.enabled = False
         inventory_BG.enabled = True
         inventory.enabled = True
+
 
     #game_state 3 is used for the in game pedulumn Amp/Freq changes
     #this is needed as it frees the cursor from the camera
@@ -135,9 +166,46 @@ def update():
         inventory_BG.enabled = False
         inventory.enabled = False
         Sky.texture=night_sky_texture
-    if held_keys['escape']: 
-        quit()
-    
+    if game_state == 5:
+        global ground
+        global slideint
+        player.enabled = False
+        inventory_BG.enabled = False
+        inventory.enabled = False
+        hand.enabled=False
+        sky.enabled=False
+        hotbar.enabled=False
+        hotbar_BG.enabled=False
+        hotbar_cursor.enabled=False
+        if int(slideint%3)==0:
+         Bob.texture=Slidetexture1
+        if int(slideint%3)==1:
+         Bob.texture=Slidetexture2
+        if int(slideint%3)==2:
+         Bob.texture=Slidetexture3
+        slideint+=(.5*time.dt)
+        CoBoo.on_click=(gamestart)
+        BooCo.on_click=application.quit
+    if game_state == 6:
+        
+        CoBoo.text="Resume Game"
+        player.enabled = False
+        inventory_BG.enabled = False
+        inventory.enabled = False
+        hand.enabled=False
+        sky.enabled=True
+        hotbar.enabled=False
+        hotbar_BG.enabled=False
+        hotbar_cursor.enabled=False
+        
+        CoBoo.on_click=(gamestart)
+        BooCo.on_click=application.quit
+    if held_keys['escape']:
+          
+             BooCo.enabled = True
+             CoBoo.enabled = True
+             player.enabled = False
+             game_state=6
     # if player falls through the map, return to starting point.
     if player.position.y < -10:
 
@@ -206,9 +274,8 @@ class InvItem(Draggable):
         self.inventory = inventory
         self.hotbar = hotbar
         self.ID = ID
-
         # set icon's texture based on ID
-        if self.ID == 1: self.texture = grass_icon_texture
+        if self.ID == 1: self.texture = grass_icon_texture 
         if self.ID == 2: self.texture = stone_icon_texture
         if self.ID == 3: self.texture = brick_icon_texture
         if self.ID == 4: self.texture = dirt_icon_texture
@@ -219,6 +286,8 @@ class InvItem(Draggable):
         if self.ID == 8: self.texture = cannon_icon_texture
         if self.ID == 9: self.texture = while_icon_texture
         if self.ID == 10: self.texture = force_vector_icon_texture
+        if self.ID == 11: self.texture = Friction_icon_texture
+        if self.ID == 12: self.texture = For_icon_texture
 
     def drag(self):
         self.xy_pos = (self.x, self.y) # store current position
@@ -253,7 +322,7 @@ class InvItem(Draggable):
 
         # Ursina coordinate system has an inverted y-axis so we subtract in this case
         self.y = int((self.y - self.scale_y/2) * self.parent.texture_scale[1]) / self.parent.texture_scale[1]
-
+        self.z=-1
         # check to swap containers
         if self.parent == self.inventory:
             # if the item gets past a certain y value, swap containers
@@ -295,7 +364,9 @@ class InvItem(Draggable):
         self.scale_y = 1 / (container.texture_scale[1] * 1.2)
 
         # i honestly forgot what this does or why i included it here
-        self.xy_pos = (self.x, self.y)
+        #commenting this out, seemed to fix part of the issues with the inventory as now 
+        # I can place the inv items in any slot they still dissapear if overlapped with eachother
+       # self.xy_pos = (self.x, self.y)
 
     def overlap_check(self):
         # check for overlap with another item
@@ -306,6 +377,7 @@ class InvItem(Draggable):
                 else:
                     child.x = self.xy_pos[0]
                     child.y = self.xy_pos[1]
+                    child.z = -1
                     print('swap!')
 
     def menu_constraint(self):
@@ -313,8 +385,8 @@ class InvItem(Draggable):
         if self.x < 0 or self.x > 0.95 or self.y > 0 or self.y < -0.95:
             
             # go back to stored position in self.xy_pos
-            self.x = self.xy_pos[0]
-            self.y = self.xy_pos[1]
+            self.x = self.xy_pos[0]/ (inventory.texture_scale[0])
+            self.y = self.xy_pos[1]/ (inventory.texture_scale[1])
             print('out of bounds!')
 
     def get_cell_pos(self):
@@ -401,7 +473,6 @@ class Hotbar(Grid):
                 print(int(child.x * 10))
 
                 if int(target_cell.x) == int(child.x * 10):
-                    
                     if debug == True:
                         print('pick this block!') 
                         print(block_pick)
@@ -428,7 +499,7 @@ class Hotbar(Grid):
             self.cursor.updatePos(self.current_slot)
         
         if key == '0':
-            self.current_slot = 9
+            self.current_slot = 8
             self.update_block_pick()
             self.cursor.updatePos(self.current_slot)     
 
@@ -439,7 +510,7 @@ class HotbarCursor(Entity):
             parent = camera.ui,
             model = 'quad',
             scale = (0.1, 0.1),
-            position = ((-.45,-.45)), # (-.5 + (scale_x / 2), -.4 - (scale_y / 2))
+            position = ((-45,-.45)),
             texture = hotbar_cursor_texture
         )
 
@@ -454,19 +525,26 @@ class HotbarCursor(Entity):
 
 
 class Voxel(Button):
-    def __init__(self, position = (0,0,0), texture = grass_texture or space_texture):
+
+    def __init__(self, position = (0,0,0), texture = grass_texture or space_texture or invisible_texture):
         super().__init__(
             parent = scene,
             position = position,
             model = 'assets/block',
             origin_y = 0.5,
-            texture = texture,
+
             color = color.color(0,0,random.uniform(0.9,1)),
             scale = 0.5)
+        global ground
+        ground=0
+    def update(self):
+      
         if game_state==1:
             self.texture=grass_texture
         if game_state==4:
             self.texture=space_texture
+        if game_state==5:
+            self.texture=invisible_texture
 
     def input(self,key):
         # if the current block is being hovered on by the mouse
@@ -567,6 +645,10 @@ class Voxel(Button):
 
                 if block_pick==10:
                     voxel = FVSim(position=self.position + mouse.normal)
+                if block_pick==11:
+                    voxel = FrictionSim(position=self.position+mouse.normal)
+                if block_pick==12:
+                    voxel = ForLoop(position=self.position+mouse.normal)
                
 
             if key == 'right mouse down':
@@ -620,18 +702,12 @@ class Sky(Entity):
         if game_state==4:
             self.texture=night_sky_texture
     def update(self):
+        global Night
         
-        if held_keys["l"]:
+        if Night == 0:
             self.texture=night_sky_texture
-        
-       
-
-        
-
-
-    
-
-
+        if Night == 1:
+            self.texture=sky_texture
 class Hand(Entity):
     def __init__(self):
         super().__init__(
@@ -663,14 +739,60 @@ class whileloop(Button):
         self.y=-2
         self.player=player
         self.t=0
-        self.Sky=Sky
-        self.night=night_sky_texture
+        
+        self.Night=1
     def update(self):
         while_sim(self)
         if self.block.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.block)
-       
+        print(self.Night)
+        global Night
+        Night = self.Night
+class ForLoop(Button):
+    def __init__(self, position = (0,0,0),collider="none"):
+         super().__init__(
+            parent = scene,
+            position = position,
+            model = 'assets/block',
+            scale = .5
+        
+            )
+         self.block=Entity(model='assets/block', scale=.5, color = color.red)
+         
+         self.block.x=self.x 
+         self.block.y=self.y+.5
+         self.block.z=self.z 
+         self.y=-2
+         self.player=player
+         self.t=0
+         self.Night=1
+    def update(self):
+         Loop_sim(self)
+         if self.hovered and held_keys['right mouse']:
+            destroy(self)
+            destroy(self.block)
+         ##print(self.Night)
+         global Night
+         Night = self.Night
+class FrictionSim(Button):    
+     def __init__(self,position=(0,0,0)):
+        super().__init__(
+            parent = scene,
+            position = position,
+            model = 'sphere',
+            color=color.turquoise,
+            origin_y=0.5,
+            scale = 1
+            
+            
+        )
+        self.b=10
+        #self.block=Entity(model='assets/block', scale=.5, color = color.red)
+     def update(self):
+        Friction_sim(self)
+        if self.hovered and held_keys['right mouse']:
+            destroy(self)
 class FVSim(Button):
     
     def __init__(self,position=(0,0,0)):
@@ -916,13 +1038,12 @@ class solarSystem(Button):
 # === Instantiation ===
 
 def terrainGen():
-    for z in range(40):
-        for x in range(40):
+ for z in range(30):
+        for x in range(30):
             voxel = Voxel(position = (x,-1,z))
-
     #here is the start of the save system logic
     #first the placed file is opened and read
-    with open("placed","r") as file:
+ with open("placed","r") as file:
         #then a default texture is defined with 
         global Text
         #then a blank list is declared
@@ -975,17 +1096,16 @@ def terrainGen():
            #there is more to come with this
 terrainGen()
 
-player = FirstPersonController()
 sky = Sky()
 hand = Hand()
 
 
-inventory_BG = MenuBG(10, 7, False)
-inventory = Inventory(10, 7)
-hotbar_BG = MenuBG(10,1, (0,-.46))
+inventory_BG = MenuBG(9, 7, False)
+inventory = Inventory(9, 7)
+hotbar_BG = MenuBG(9,1, (0,-.46,-1))
 hotbar_cursor = HotbarCursor()
-hotbar = Hotbar(10,1, (-.5,-.4), hotbar_cursor)
-
+hotbar = Hotbar(9,1, (inventory.x,-.4,100), hotbar_cursor)
+print(inventory_BG.position.x,"RIGHT HERE JACKASSSSSSS")
 
 test_item1 = InvItem(inventory, hotbar, 1, inventory.find_free_cell())
 test_item2 = InvItem(inventory, hotbar, 2, inventory.find_free_cell())
@@ -999,5 +1119,6 @@ test_item7 = InvItem(inventory, hotbar, 7, inventory.find_free_cell())
 test_item8 = InvItem(inventory, hotbar, 8, inventory.find_free_cell())
 test_item9 = InvItem(inventory, hotbar, 9, inventory.find_free_cell())
 test_item10 = InvItem(inventory, hotbar, 10, inventory.find_free_cell())
-
+test_item11 = InvItem(inventory, hotbar, 11, inventory.find_free_cell())
+test_item12 = InvItem(inventory, hotbar, 12, inventory.find_free_cell())
 app.run()

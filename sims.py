@@ -118,13 +118,35 @@ def while_sim(self):
  
   if abs(self.player.x-self.block.x)<=.1 and abs(self.player.z-self.block.z)<=.1:
             self.block.color=color.blue
-            Sky.texture=self.night
+            self.Night=0
   if abs(self.player.x-self.block.x)>=.1 and abs(self.player.z-self.block.z)>=.1:
             self.block.color=color.red
+            self.Night=1
 def FV_sim(self):
     
-    self.x=self.x+time.dt
+   self.x=self.x+time.dt
+def Friction_sim(self):
+    if self.b > 0:
+      self.x=self.x+(.5*time.dt)*self.b
+      self.b=self.b-.1
+      print(self.b)
     self.z=self.z
+def Loop_sim(self):
+  q= 4*time.dt
+  if abs(self.player.x-self.block.x)<=.5 and abs(self.player.z-self.block.z)<=.5:
+           if self.t<100:
+               print(int(self.t))
+               self.t+=q
+               if int(self.t)%2==1:
+                   self.Night=1
+               if int(self.t)%2==0:
+                   self.Night=0
+           if self.t>=100:
+               self.Night=1
+               
+               
+      
+  
           
               
 
