@@ -1,5 +1,5 @@
 from ursina import *
-
+import math
 
 #f writes to the Pendulum file, so students can graph and chart
 # based off the values they input for Amplitude and Frequency
@@ -108,14 +108,25 @@ def apple_sim(self):
   #y starts higher then the button so players can get a better look as the apple falls
   self.apple.y=3-self.t
   
+
 def cannon_sim(self):
- self.t += time.dt
- self.apple.x=self.position.x
- self.apple.z=self.position.z-2.3-(2700*(self.t)*(self.t))
- self.apple.y=self.position.y
-def while_sim(self):
-  
  
+    self.velocity=.01
+    
+    print(self.apple.y," appy")
+    print(self.apple.z, " appz")
+  
+    self.gravity= -9.8
+ 
+    self.apple.z = (self.velocity*math.cos(45)*(time.dt*time.dt))
+
+    self.apple.y = self.y + (self.velocity*math.sin(45)*time.dt-.5*self.gravity*(time.dt*time.dt))
+
+    self.apple.x = self.position.x  
+    
+    self.t+=time.dt
+    
+def while_sim(self):
   if abs(self.player.x-self.block.x)<=.1 and abs(self.player.z-self.block.z)<=.1:
             self.block.color=color.blue
             self.Night=0
@@ -123,11 +134,19 @@ def while_sim(self):
             self.block.color=color.red
             self.Night=1
 def FV_sim(self):
-    
-   self.x=self.x+time.dt
+   #self.z
+   self.t+=time.dt
+   self.gravity=.0098
+   print(self.gravity)
+   self.velocity=.01/((self.t+.000001))
+   self.y=(self.y+self.velocity)-self.gravity
+   self.x=self.x+self.velocity
+   
 def Friction_sim(self):
     if self.b > 0:
-      self.x=self.x+(.5*time.dt)*self.b
+      #initial force
+      self.x=self.x+(5*time.dt)*self.b
+      #friction force
       self.b=self.b-.1
       print(self.b)
     self.z=self.z

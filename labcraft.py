@@ -88,7 +88,7 @@ block_pick = 0 # default empty hand
  2: inventory menu screen
  """
 global game_state
-game_state = 2
+game_state = 5
 
 window.fps_counter.enabled = True
 window.exit_button.visible = True
@@ -118,7 +118,7 @@ def update():
  
     # === Game States ===
   
-    if held_keys['e']:
+    if held_keys['e'] and game_state == 1 :
         global x
         x=0
         game_state = 2
@@ -200,14 +200,14 @@ def update():
         
         CoBoo.on_click=(gamestart)
         BooCo.on_click=application.quit
-    if held_keys['escape']:
+    if held_keys['escape'] and game_state!=5:
           
              BooCo.enabled = True
              CoBoo.enabled = True
              player.enabled = False
              game_state=6
     # if player falls through the map, return to starting point.
-    if player.position.y < -10:
+    if player.position.y < -100:
 
         if debug == True:
             print("falling!")
@@ -217,14 +217,14 @@ def update():
         player.z = 1
     
     #if player goes to high return to starting point.
-    if player.position.y > 20:
+   # if player.position.y > 20:
 
-        if debug == True:
-            print("reverse falling!")
+        #if debug == True:
+            #print("reverse falling!")
         
-        player.y =1
-        player.x =1
-        player.z =1
+        #player.y =1
+        #player.x =1
+        #player.z =1
 
 
 # === Class Declarations ===
@@ -470,9 +470,9 @@ class Hotbar(Grid):
             for child in self.children:
 
                 print(int(target_cell.x))
-                print(int(child.x * 10))
+                print(int(child.x * 9))
 
-                if int(target_cell.x) == int(child.x * 10):
+                if int(target_cell.x) == int(child.x * 9):
                     if debug == True:
                         print('pick this block!') 
                         print(block_pick)
@@ -497,7 +497,6 @@ class Hotbar(Grid):
             self.current_slot = (int(key) - 1)
             self.update_block_pick()
             self.cursor.updatePos(self.current_slot)
-        
         if key == '0':
             self.current_slot = 8
             self.update_block_pick()
@@ -510,7 +509,7 @@ class HotbarCursor(Entity):
             parent = camera.ui,
             model = 'quad',
             scale = (0.1, 0.1),
-            position = ((-45,-.45)),
+            position = ((-.4,-.45)),
             texture = hotbar_cursor_texture
         )
 
@@ -525,26 +524,29 @@ class HotbarCursor(Entity):
 
 
 class Voxel(Button):
-
     def __init__(self, position = (0,0,0), texture = grass_texture or space_texture or invisible_texture):
         super().__init__(
             parent = scene,
             position = position,
             model = 'assets/block',
             origin_y = 0.5,
-
+          
             color = color.color(0,0,random.uniform(0.9,1)),
             scale = 0.5)
         global ground
         ground=0
-    def update(self):
       
-        if game_state==1:
+    def update(self):
+
+        if game_state==1 and block_pick==0:
             self.texture=grass_texture
         if game_state==4:
             self.texture=space_texture
         if game_state==5:
             self.texture=invisible_texture
+    
+
+        
 
     def input(self,key):
         # if the current block is being hovered on by the mouse
@@ -556,9 +558,12 @@ class Voxel(Button):
                 global place
                 global typea
                 punch_sound.play()
-
                 if block_pick == 1: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
+                   # print(player.position-(self.position+mouse.normal))
+                    voxel.texture=grass_texture
+                    #print(player.position," Player")
+                    #print(self.position+mouse.normal," block")
                     #this next bit is for the save system
                     #first the position of the voxel is set to the variable place
                     place=self.position+mouse.normal
@@ -578,9 +583,11 @@ class Voxel(Button):
                     d.close
                     
                    
-                if block_pick == 2: 
+                if block_pick == 2:
                     voxel = Voxel(position = self.position + mouse.normal, texture = stone_texture)
-                    #exact same logic as the grass block
+                        #exact same logic as the grass block
+                    
+                    voxel.texture=stone_texture
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -592,6 +599,7 @@ class Voxel(Button):
                 if block_pick == 3:
                     voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
                     #exact same logic as the grass block
+                    voxel.texture=brick_texture
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -600,9 +608,10 @@ class Voxel(Button):
                     d = open("placed","a")   
                     d.write(place4+","+"3"+","+"1"+'\n')
                     d.close
-                if block_pick == 4: 
+                if block_pick == 4 and game_state!=5: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
                     #exact same logic as the grass block
+                    voxel.texture=dirt_texture
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -614,7 +623,7 @@ class Voxel(Button):
                 if block_pick == 5: 
                     voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
                     #exact same logic as the grass block
-                    
+                
                     place=self.position+mouse.normal
                     place1=str(place)
                     place2=place1.replace("Vec3","")
@@ -695,7 +704,7 @@ class Sky(Entity):
             model = 'sphere',
            
             texture=sky_texture or night_sky_texture,
-            scale = 150,
+            scale = 1500,
             double_sided = True)
         if game_state==1:
             self.texture=sky_texture
@@ -788,7 +797,6 @@ class FrictionSim(Button):
             
         )
         self.b=10
-        #self.block=Entity(model='assets/block', scale=.5, color = color.red)
      def update(self):
         Friction_sim(self)
         if self.hovered and held_keys['right mouse']:
@@ -806,6 +814,7 @@ class FVSim(Button):
             
             
         )
+        self.t=0.0
         self.b=10
         #self.block=Entity(model='assets/block', scale=.5, color = color.red)
     def update(self):
@@ -825,7 +834,8 @@ class cannon(Button):
             model = 'assets/Cannon',
             color = color.gray,
             origin_y = 0.5,
-            scale = 0.5)
+            scale = 0.5,
+            rotation=Vec3(45,0,0))
         #this is the prompt for the user to fire, it has to be a boolean other wise
         #once it's hovered over it'll never stop being enabled, that lil tidbit was provided
         #through ChatGPT thanks AI!
@@ -835,7 +845,7 @@ class cannon(Button):
         self.apple.z=self.position.z-2.3
         self.apple.y=self.position.y
         self.t=0.0
-      
+        self.velocity=0.0
     def update(self):
         global q
         
@@ -857,13 +867,16 @@ class cannon(Button):
         #global q
         #then when the apple is more than 10 blocks away in the z axis
         #q is reset to 0 the apple is moved back and you can fire again
-        if abs(self.position.z-self.apple.z) >= 10:
+        if self.velocity <= .009:
             self.apple.z=self.position.z-2.3
+            self.apple.y=self.position.y
+            self.velocity=0.0
             self.t=0.0
             q=0
         if self.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.apple)
+            q=0
     
 class pendulum(Button):
    
@@ -937,27 +950,37 @@ class pendulum(Button):
             global AmpInput
             global x
             #it sets whatever is in the inputfield to amp which is an int
-            amp=int(float(AmpInput.text))
+            try:
+                amp=int(float(AmpInput.text))
             #it then sets Amp which is an object which is then used in the sims file to set the Amplitude
             #to the user input
-            self.Amp=amp
-            x=x+1
-            destroy(AmpInput)
-            destroy(AmpButt)
+                self.Amp=amp
+                x=x+1
+                destroy(AmpInput)
+                destroy(AmpButt)
+            except:
+                ValueError
+                print("Has to be a number Dawg")
             
             
 
         def Retrn():
             #the exact same as the method above but for the frequency
+
             global FreqButt
             global FreqInput
             global freq
             global x
-            freq=int(float(FreqInput.text))
-            self.Freq=freq
-            destroy(FreqInput)
-            destroy(FreqButt)
-            x=x+1
+            try:
+                freq=int(float(FreqInput.text))
+                self.Freq=freq
+                destroy(FreqInput)
+                destroy(FreqButt)
+                x=x+1
+            except:
+                print("Has to be a number Dawg")
+                ValueError
+
         global AmpButt
         #calls method above
         AmpButt.on_click = Rtrn
@@ -965,9 +988,8 @@ class pendulum(Button):
         global x
         if x>=2:
             global game_state
-            game_state=1        
-            
-    
+            game_state=1    
+        
 #here is the class for the apple sim   
 class apple(Button):
     def __init__(self, position = (0,0,0)):
@@ -1036,11 +1058,69 @@ class solarSystem(Button):
 
 
 # === Instantiation ===
+terrainy= [[0]*10 for _ in range(10)]
+for x in range(10):
+    for z in range(10):
+        terrainy[x][z]="*"
+
+Lrow=random.randint(0,9)
+Lcol=random.randint(0,9)
+Hrow=random.randint(0,9)
+Hcol=random.randint(0,9)
+Ppoint=random.randint(-9,9)
+
+def ClosestTo(row,col,Hrow,Hcol,Lrow,Lcol):
+    
+    Arow=abs(row-Hrow)
+    Brow=abs(row-Lrow)
+    Acol=abs(col-Hcol)
+    Bcol=abs(col-Lcol)
+    if Acol+Arow>Bcol+Brow:
+        return "Closest To High"
+    elif Acol+Arow<Bcol+Brow: 
+        return "Closest to Low"
+    else:
+        return "Equidistant"
+def OnBoard(row, col):
+    if 0 <= row < 10 and 0 <= col < 10:
+        return True
+    else:
+        return False
+def RandomHeight(list, row, col, Lrow, Lcol, Hrow, Hcol, Ppoint):
+    if not OnBoard(row, col):
+        return
+    
+    if list[row][col] == "*":
+        if ClosestTo(row, col, Lrow, Lcol, Hrow, Hcol) == "Closest To High":
+            list[row][col] = Ppoint - 1
+        elif ClosestTo(row, col, Lrow, Lcol, Hrow, Hcol) == "Closest To Low":
+            list[row][col] = Ppoint + 1
+        else:
+            list[row][col] = Ppoint
+    else:
+        return
+
+    Npoint = list[row][col]
+
+    for x in range(row - 1, row + 2):
+        for z in range(col - 1, col + 2):
+            RandomHeight(list, x, z, Lrow, Lcol, Hrow, Hcol, Npoint)
+    return list
+
+RandomHeight(terrainy,6,6,Lrow,Lcol,Hrow,Lrow,Ppoint)
+
+    
+
 
 def terrainGen():
  for z in range(30):
         for x in range(30):
-            voxel = Voxel(position = (x,-1,z))
+            voxel = Voxel(position = (x,0,z),texture=grass_texture)
+            #uncomment this for the random terrain gen
+            #voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
+            
+ 
+ 
     #here is the start of the save system logic
     #first the placed file is opened and read
  with open("placed","r") as file:
