@@ -111,19 +111,19 @@ def apple_sim(self):
 
 def cannon_sim(self):
  
-    self.velocity=.01
+    self.velocity=.01/(time.dt+.0000001)
     
     print(self.apple.y," appy")
     print(self.apple.z, " appz")
   
-    self.gravity= -9.8
+    self.gravity= .098
  
-    self.apple.z = (self.velocity*math.cos(45)*(time.dt*time.dt))
+    self.apple.z = self.velocity*math.cos(45)
 
-    self.apple.y = self.y + (self.velocity*math.sin(45)*time.dt-.5*self.gravity*(time.dt*time.dt))
+    self.apple.y = self.y + (self.velocity*math.sin(45)-.5*self.gravity)
 
     self.apple.x = self.position.x  
-    
+    time.dt*=.05
     self.t+=time.dt
     
 def while_sim(self):

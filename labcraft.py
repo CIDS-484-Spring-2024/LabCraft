@@ -102,6 +102,8 @@ CoBoo = Button(scale=(.5,.1), x=-.6,y=-.2,color=color.rgb(189,0,255),text="Start
 BooCo = Button(scale=(.3,.1),x=-.7,y=-.3,color=color.rgb(1,255,31),text="Exit Game")
 global slideint
 slideint=0
+app.frameRateMeter=True
+app.frame_rate=60
 def update():
     global game_state
     global block_pick
@@ -1067,57 +1069,53 @@ Lrow=random.randint(0,9)
 Lcol=random.randint(0,9)
 Hrow=random.randint(0,9)
 Hcol=random.randint(0,9)
-Ppoint=random.randint(-9,9)
-
-def ClosestTo(row,col,Hrow,Hcol,Lrow,Lcol):
-    
-    Arow=abs(row-Hrow)
-    Brow=abs(row-Lrow)
-    Acol=abs(col-Hcol)
-    Bcol=abs(col-Lcol)
-    if Acol+Arow>Bcol+Brow:
-        return "Closest To High"
-    elif Acol+Arow<Bcol+Brow: 
-        return "Closest to Low"
-    else:
-        return "Equidistant"
+Hpoint=random.randint(0,9)
+Lpoint=random.randint(-9,0)
+mid=(Hpoint+Lpoint)/2
+def ClosestTo(Lrow,Lcol,Hrow,Hcol,Mrow,Mcol):
+  dmtL=math.sqrt(abs((Lrow-Mrow)*(Lrow-Mrow))+abs((Lcol-Mcol)*(Lcol-Mcol))) 
+  dmtH=math.sqrt(abs((Hrow-Mrow)*(Hrow-Mrow))+abs((Hcol-Mcol)*(Hcol-Mcol))) 
+  if dmtL>dmtH:
+    return "Closest to Low"
+  elif dmtH>dmtL:
+    return "Closest to High"
+  else:
+    return "Equidistant"
 def OnBoard(row, col):
     if 0 <= row < 10 and 0 <= col < 10:
         return True
     else:
         return False
-def RandomHeight(list, row, col, Lrow, Lcol, Hrow, Hcol, Ppoint):
+def RandomHeight(list, row, col, mid):
     if not OnBoard(row, col):
         return
-    
+
     if list[row][col] == "*":
-        if ClosestTo(row, col, Lrow, Lcol, Hrow, Hcol) == "Closest To High":
-            list[row][col] = Ppoint - 1
-        elif ClosestTo(row, col, Lrow, Lcol, Hrow, Hcol) == "Closest To Low":
-            list[row][col] = Ppoint + 1
+        if ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col) == "Closest to Low":
+            list[row][col] = mid + 1
+        elif ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col) == "Closest to High":
+            list[row][col] = mid - 1
         else:
-            list[row][col] = Ppoint
+            list[row][col] = mid
     else:
         return
-
-    Npoint = list[row][col]
-
+    Npoint=mid
     for x in range(row - 1, row + 2):
         for z in range(col - 1, col + 2):
-            RandomHeight(list, x, z, Lrow, Lcol, Hrow, Hcol, Npoint)
-    return list
+            RandomHeight(list, x, z, Npoint)
+    
 
-RandomHeight(terrainy,6,6,Lrow,Lcol,Hrow,Lrow,Ppoint)
+RandomHeight(terrainy,6,6,mid)
 
     
 
 
 def terrainGen():
- for z in range(30):
-        for x in range(30):
-            voxel = Voxel(position = (x,0,z),texture=grass_texture)
+ for z in range(10):
+        for x in range(10):
+            #voxel = Voxel(position = (x,0,z),texture=grass_texture)
             #uncomment this for the random terrain gen
-            #voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
+            voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
             
  
  
@@ -1185,7 +1183,7 @@ inventory = Inventory(9, 7)
 hotbar_BG = MenuBG(9,1, (0,-.46,-1))
 hotbar_cursor = HotbarCursor()
 hotbar = Hotbar(9,1, (inventory.x,-.4,100), hotbar_cursor)
-print(inventory_BG.position.x,"RIGHT HERE JACKASSSSSSS")
+
 
 test_item1 = InvItem(inventory, hotbar, 1, inventory.find_free_cell())
 test_item2 = InvItem(inventory, hotbar, 2, inventory.find_free_cell())
