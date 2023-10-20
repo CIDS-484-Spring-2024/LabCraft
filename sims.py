@@ -113,7 +113,7 @@ def apple_sim(self):
 def cannon_sim(self):
     self.t+=time.dt
     d =open("canno","a")
-    self.velocity=10
+    self.velocity=100
     self.velocityX=math.cos(45)*self.velocity
     self.velocityY=math.sin(45)*self.velocity
     self.gravity= 9.8

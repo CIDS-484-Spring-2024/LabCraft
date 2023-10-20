@@ -839,7 +839,7 @@ class cannon(Button):
             color = color.gray,
             origin_y = 0.5,
             scale = 0.5,
-            rotation=Vec3(45,0,0))
+            rotation=Vec3(45,180,0))
         #this is the prompt for the user to fire, it has to be a boolean other wise
         #once it's hovered over it'll never stop being enabled, that lil tidbit was provided
         #through ChatGPT thanks AI!
