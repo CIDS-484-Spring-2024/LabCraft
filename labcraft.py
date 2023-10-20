@@ -1141,9 +1141,9 @@ RandomHeight(terrainy,29,29,mid)
 def terrainGen():
  for z in range(30):
         for x in range(30):
-            #voxel = Voxel(position = (x,0,z),texture=grass_texture)
+            voxel = Voxel(position = (x,0,z),texture=grass_texture)
             #uncomment this for the random terrain gen
-            voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
+            #voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
             
  
  

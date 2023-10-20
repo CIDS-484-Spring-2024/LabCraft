@@ -1,5 +1,6 @@
 from ursina import *
 import math
+from time import process_time 
 
 #f writes to the Pendulum file, so students can graph and chart
 # based off the values they input for Amplitude and Frequency
@@ -110,22 +111,20 @@ def apple_sim(self):
   
 
 def cannon_sim(self):
- 
-    self.velocity=.01/(time.dt+.0000001)
-    
-    print(self.apple.y," appy")
-    print(self.apple.z, " appz")
-  
-    self.gravity= .098
- 
-    self.apple.z = self.velocity*math.cos(45)
-
-    self.apple.y = self.y + (self.velocity*math.sin(45)-.5*self.gravity)
-
-    self.apple.x = self.position.x  
-    time.dt*=.05
     self.t+=time.dt
+    d =open("canno","a")
+    self.velocity=10
+    self.velocityX=math.cos(45)*self.velocity
+    self.velocityY=math.sin(45)*self.velocity
+    self.gravity= 9.8
+    self.apple.z = self.z+self.velocityX*time.dt
+    self.apple.y = self.y+self.velocityY*self.t-(4.9*(self.t*self.t))
+    print(self.apple.y,"<appy-----appz>",self.apple.z)
+    self.apple.x = self.position.x  
     
+    d.write("velocityY: "+str(self.velocityY)+"| velocityX: "+str(self.velocityX)+"| time:"+str(self.t)+"\n")
+    d.write("")
+    d.close
 def while_sim(self):
   if abs(self.player.x-self.block.x)<=.1 and abs(self.player.z-self.block.z)<=.1:
             self.block.color=color.blue
@@ -135,7 +134,7 @@ def while_sim(self):
             self.Night=1
 def FV_sim(self):
    #self.z
-   self.t+=time.dt
+   
    self.gravity=.0098
    print(self.gravity)
    self.velocity=.01/((self.t+.000001))
