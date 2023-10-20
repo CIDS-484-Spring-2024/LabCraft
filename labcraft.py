@@ -105,6 +105,9 @@ slideint=0
 app.frameRateMeter=True
 app.frame_rate=60
 def update():
+    if held_keys['v']:
+        print(player.y)
+        player.y+=3
     global game_state
     global block_pick
     def gamestart():
@@ -562,10 +565,9 @@ class Voxel(Button):
                 punch_sound.play()
                 if block_pick == 1: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
-                   # print(player.position-(self.position+mouse.normal))
+            
                     voxel.texture=grass_texture
-                    #print(player.position," Player")
-                    #print(self.position+mouse.normal," block")
+                   
                     #this next bit is for the save system
                     #first the position of the voxel is set to the variable place
                     place=self.position+mouse.normal
@@ -670,7 +672,7 @@ class Voxel(Button):
                 #typea is an int that is used with a matchcase to set typeb to a number
                 #using the match case below this is used later in the code with the placing/destroying logic
                 typea=0
-                print((typeb))
+               
                 match typeb:
                     case "grass_block.png":
                         typea=1
@@ -757,7 +759,7 @@ class whileloop(Button):
         if self.block.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.block)
-        print(self.Night)
+        
         global Night
         Night = self.Night
 class ForLoop(Button):
@@ -783,7 +785,7 @@ class ForLoop(Button):
          if self.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.block)
-         ##print(self.Night)
+         
          global Night
          Night = self.Night
 class FrictionSim(Button):    
@@ -1011,7 +1013,7 @@ class apple(Button):
             
     def update(self):
         apple_sim(self)
-        print(self.apple.y)
+        
         #this destroys the block to prevent memory overflow
         if self.apple.y <= -10:
                 destroy(self)
@@ -1060,59 +1062,85 @@ class solarSystem(Button):
 
 
 # === Instantiation ===
-terrainy= [[0]*10 for _ in range(10)]
-for x in range(10):
-    for z in range(10):
+terrainy= [[0]*30 for _ in range(30)]
+for x in range(30):
+    for z in range(30):
         terrainy[x][z]="*"
 
-Lrow=random.randint(0,9)
-Lcol=random.randint(0,9)
-Hrow=random.randint(0,9)
-Hcol=random.randint(0,9)
-Hpoint=random.randint(0,9)
-Lpoint=random.randint(-9,0)
+#Lrow=0
+Lrow=random.randint(0,15)
+#Lcol=0
+Lcol=random.randint(0,15)
+#Hrow=10
+Hrow=random.randint(15,30)
+#Hcol=10
+Hcol=random.randint(15,30)
+#Hpoint=10
+Hpoint=random.randint(-15,0)
+#Lpoint=0
+Lpoint=random.randint(-30,-15)
 mid=(Hpoint+Lpoint)/2
 def ClosestTo(Lrow,Lcol,Hrow,Hcol,Mrow,Mcol):
   dmtL=math.sqrt(abs((Lrow-Mrow)*(Lrow-Mrow))+abs((Lcol-Mcol)*(Lcol-Mcol))) 
   dmtH=math.sqrt(abs((Hrow-Mrow)*(Hrow-Mrow))+abs((Hcol-Mcol)*(Hcol-Mcol))) 
+ # print(dmtH,"<dmtH   dmtL>",dmtL)
   if dmtL>dmtH:
-    return "Closest to Low"
+      if dmtL:
+          return "is Low"
+      else:
+        return "Closest to Low"
   elif dmtH>dmtL:
-    return "Closest to High"
+      if dmtH==0:
+          return "is High"
+      else:
+        return "Closest to High"
   else:
     return "Equidistant"
 def OnBoard(row, col):
-    if 0 <= row < 10 and 0 <= col < 10:
+    if 0 <= row < 30 and 0 <= col < 30:
         return True
     else:
         return False
 def RandomHeight(list, row, col, mid):
     if not OnBoard(row, col):
         return
-
+    print(Hpoint,"<Hpoint-----Lpoint>",Lpoint)
     if list[row][col] == "*":
+       # print(ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col))
         if ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col) == "Closest to Low":
-            list[row][col] = mid + 1
-        elif ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col) == "Closest to High":
             list[row][col] = mid - 1
+            Npoint=mid-1
+        elif ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col) == "Closest to High":
+            list[row][col] = mid + 1
+            Npoint=mid+1
+        elif ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col) == "is High":
+            list[row][col]=Hpoint
+            Npoint=Hpoint
+        elif ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col) == "is Low":
+            list[row][col]=Lpoint
+            Npoint=Lpoint
         else:
             list[row][col] = mid
+            Npoint=mid
     else:
         return
-    Npoint=mid
-    for x in range(row - 1, row + 2):
-        for z in range(col - 1, col + 2):
+    
+   
+  
+    for x in range(row - 1, row + 1):
+        for z in range(col - 1, col + 1):
+           # print(mid," ",Npoint)
             RandomHeight(list, x, z, Npoint)
     
 
-RandomHeight(terrainy,6,6,mid)
+RandomHeight(terrainy,29,29,mid)
 
     
 
 
 def terrainGen():
- for z in range(10):
-        for x in range(10):
+ for z in range(30):
+        for x in range(30):
             #voxel = Voxel(position = (x,0,z),texture=grass_texture)
             #uncomment this for the random terrain gen
             voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
