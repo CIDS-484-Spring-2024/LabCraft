@@ -1,7 +1,7 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
-
+#from terraingen import *
 window.borderless = True
 
 
@@ -1079,7 +1079,9 @@ Hcol=random.randint(15,30)
 Hpoint=random.randint(-15,0)
 #Lpoint=0
 Lpoint=random.randint(-30,-15)
+maxrecur=0
 mid=(Hpoint+Lpoint)/2
+
 def ClosestTo(Lrow,Lcol,Hrow,Hcol,Mrow,Mcol):
   dmtL=math.sqrt(abs((Lrow-Mrow)*(Lrow-Mrow))+abs((Lcol-Mcol)*(Lcol-Mcol))) 
   dmtH=math.sqrt(abs((Hrow-Mrow)*(Hrow-Mrow))+abs((Hcol-Mcol)*(Hcol-Mcol))) 
@@ -1102,6 +1104,7 @@ def OnBoard(row, col):
     else:
         return False
 def RandomHeight(list, row, col, mid):
+    
     if not OnBoard(row, col):
         return
     print(Hpoint,"<Hpoint-----Lpoint>",Lpoint)
@@ -1122,18 +1125,17 @@ def RandomHeight(list, row, col, mid):
         else:
             list[row][col] = mid
             Npoint=mid
+    
     else:
         return
-    
    
-  
     for x in range(row - 1, row + 1):
         for z in range(col - 1, col + 1):
            # print(mid," ",Npoint)
             RandomHeight(list, x, z, Npoint)
-    
+            
 
-RandomHeight(terrainy,29,29,mid)
+RandomHeight(terrainy,random.randint(0,30),random.randint(0,30),mid)
 
     
 
@@ -1144,7 +1146,9 @@ def terrainGen():
             voxel = Voxel(position = (x,0,z),texture=grass_texture)
             #uncomment this for the random terrain gen
             #voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
-            
+            a=open("terrain","w")
+            a.write(str(terrainy))
+            a.close
  
  
     #here is the start of the save system logic
