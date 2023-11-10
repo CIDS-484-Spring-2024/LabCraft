@@ -112,19 +112,17 @@ def apple_sim(self):
 
 def cannon_sim(self):
     self.t+=time.dt
-    d =open("canno","a")
     self.velocity=10
     self.velocityX=math.cos(45)*self.velocity
     self.velocityY=math.sin(45)*self.velocity
     self.gravity= 9.8
-    self.apple.z += self.z+self.velocityX*time.dt
+    
+    self.apple.z +=self.z+self.velocityX*time.dt
     self.apple.y = self.y+self.velocityY*self.t-(4.9*(self.t*self.t))
-    print(self.apple.y,"<appy-----appz>",self.apple.z)
     self.apple.x = self.position.x  
-    self.e = Entity(model='cube', color=color.orange, position=(self.x,self.apple.y,self.apple.z), scale=(0.05,.05,1), rotation=(0,0,0), texture='brick')
-    d.write("velocityY: "+str(self.velocityY)+"| velocityX: "+str(self.velocityX)+"| time:"+str(self.t)+"\n")
-    d.write("")
-    d.close
+    
+    self.e.position=(self.x,self.apple.y,self.apple.z)
+
 def while_sim(self):
   if abs(self.player.x-self.block.x)<=.1 and abs(self.player.z-self.block.z)<=.1:
             self.block.color=color.blue

@@ -106,8 +106,7 @@ app.frameRateMeter=True
 app.frame_rate=60
 def update():
     if held_keys['v']:
-        print(player.y)
-        player.y+=3
+        player.y+=10
     global game_state
     global block_pick
     def gamestart():
@@ -846,10 +845,11 @@ class cannon(Button):
         cannon.tooltip=Tooltip("press F to fire", enabled=False)
         self.apple = Entity(model="assets/block", scale=0.1,texture=apple_texture,Collider="mesh")
         self.apple.x=self.position.x
-        self.apple.z=self.position.z-2.3
-        self.apple.y=self.position.y
+        self.apple.z=self.position.z+1.7
+        self.apple.y=math.tan(45)*1.6
         self.t=0.0
         self.velocity=0.0
+        self.e = Entity(model='cube', color=color.orange, scale=(0.05,time.dt,1),position=(-10,-10,-10), rotation=(0,0,0), texture='brick')
     def update(self):
         global q
         
@@ -871,16 +871,20 @@ class cannon(Button):
         #global q
         #then when the apple is more than 10 blocks away in the z axis
         #q is reset to 0 the apple is moved back and you can fire again
-        if self.velocity <= .009:
-            self.apple.z=self.position.z-2.3
-            self.apple.y=self.position.y
+        if self.apple.y <= .009:
+            self.apple.z=self.position.z+1.7
+            self.apple.y=math.tan(45)*1.6
             self.velocity=0.0
             self.t=0.0
             q=0
-        if self.hovered and held_keys['right mouse']:
+        try:
+         if self.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.apple)
+            destroy(self.e)
             q=0
+        except AssertionError:
+            print("Oofda Pal")
     
 class pendulum(Button):
    
@@ -1231,4 +1235,8 @@ test_item9 = InvItem(inventory, hotbar, 9, inventory.find_free_cell())
 test_item10 = InvItem(inventory, hotbar, 10, inventory.find_free_cell())
 test_item11 = InvItem(inventory, hotbar, 11, inventory.find_free_cell())
 test_item12 = InvItem(inventory, hotbar, 12, inventory.find_free_cell())
+#try:
 app.run()
+#except:
+ #   AssertionError
+  #  print("get deleted Cannon")
