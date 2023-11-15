@@ -1,6 +1,9 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
+import contextlib
+
+
 #from terraingen import *
 window.borderless = True
 
@@ -65,7 +68,8 @@ punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 boom_sound = Audio('assets/BOOM', loop= False, autoplay=False)
 global Night
 Night=1
-
+global Cannonplace
+Cannonplace=0
 
 
 
@@ -105,6 +109,7 @@ slideint=0
 app.frameRateMeter=True
 app.frame_rate=60
 def update():
+  
     if held_keys['v']:
         player.y+=10
     global game_state
@@ -211,7 +216,7 @@ def update():
              player.enabled = False
              game_state=6
     # if player falls through the map, return to starting point.
-    if player.position.y < -100:
+    while player.position.y < -100:
 
         if debug == True:
             print("falling!")
@@ -561,6 +566,7 @@ class Voxel(Button):
             if key == 'left mouse down':
                 global place
                 global typea
+                global Cannonplace
                 punch_sound.play()
                 if block_pick == 1: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
@@ -649,8 +655,11 @@ class Voxel(Button):
                 #tells the game to load the apple block
                 if block_pick == 7:
                     voxel = apple(position = self.position+mouse.normal)
-                if block_pick==8:
+                if block_pick==8 and Cannonplace<1:
+                   
                     voxel = cannon(position =self.position+mouse.normal)
+                    Cannonplace = 1
+                    print(Cannonplace)
                 if block_pick==9:
                     voxel = whileloop(position = self.position + mouse.normal)
                   
@@ -852,7 +861,7 @@ class cannon(Button):
         self.e = Entity(model='cube', color=color.orange, scale=(0.05,time.dt,1),position=(-10,-10,-10), rotation=(0,0,0), texture='brick')
     def update(self):
         global q
-        
+        global Cannonplace
         if self.hovered:
             cannon.tooltip.enabled=True
         if not self.hovered:
@@ -862,6 +871,7 @@ class cannon(Button):
             #global q
             #the reason q is needed is because Ursina doesn't handle single key presses
             #in the update function very well so pressing f makes q = to 1
+            print(self.z,self.x)
             q=1
             boom_sound.play()
         #which triggers the update function
@@ -871,20 +881,20 @@ class cannon(Button):
         #global q
         #then when the apple is more than 10 blocks away in the z axis
         #q is reset to 0 the apple is moved back and you can fire again
-        if self.apple.y <= .009:
-            self.apple.z=self.position.z+1.7
-            self.apple.y=math.tan(45)*1.6
-            self.velocity=0.0
-            self.t=0.0
-            q=0
-        try:
+       # if self.apple.y <= .009:
+         #   self.apple.z=self.position.z+1.7
+          #  self.apple.y=math.tan(45)*1.6
+          #  self.velocity=0.0
+         #   self.t=0.0
+         #   q=0
+        with contextlib.suppress(AssertionError):
          if self.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.apple)
             destroy(self.e)
             q=0
-        except AssertionError:
-            print("Oofda Pal")
+            Cannonplace=0
+     
     
 class pendulum(Button):
    
@@ -1089,7 +1099,7 @@ mid=(Hpoint+Lpoint)/2
 def ClosestTo(Lrow,Lcol,Hrow,Hcol,Mrow,Mcol):
   dmtL=math.sqrt(abs((Lrow-Mrow)*(Lrow-Mrow))+abs((Lcol-Mcol)*(Lcol-Mcol))) 
   dmtH=math.sqrt(abs((Hrow-Mrow)*(Hrow-Mrow))+abs((Hcol-Mcol)*(Hcol-Mcol))) 
- # print(dmtH,"<dmtH   dmtL>",dmtL)
+
   if dmtL>dmtH:
       if dmtL:
           return "is Low"
@@ -1111,9 +1121,9 @@ def RandomHeight(list, row, col, mid):
     
     if not OnBoard(row, col):
         return
-    print(Hpoint,"<Hpoint-----Lpoint>",Lpoint)
+
     if list[row][col] == "*":
-       # print(ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col))
+     
         if ClosestTo(Lrow, Lcol, Hrow, Hcol, row, col) == "Closest to Low":
             list[row][col] = mid - 1
             Npoint=mid-1
@@ -1135,7 +1145,7 @@ def RandomHeight(list, row, col, mid):
    
     for x in range(row - 1, row + 1):
         for z in range(col - 1, col + 1):
-           # print(mid," ",Npoint)
+      
             RandomHeight(list, x, z, Npoint)
             
 
@@ -1235,8 +1245,5 @@ test_item9 = InvItem(inventory, hotbar, 9, inventory.find_free_cell())
 test_item10 = InvItem(inventory, hotbar, 10, inventory.find_free_cell())
 test_item11 = InvItem(inventory, hotbar, 11, inventory.find_free_cell())
 test_item12 = InvItem(inventory, hotbar, 12, inventory.find_free_cell())
-#try:
-app.run()
-#except:
- #   AssertionError
-  #  print("get deleted Cannon")
+with contextlib.suppress(AssertionError):
+    app.run()

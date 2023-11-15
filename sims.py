@@ -14,6 +14,8 @@ p.write("time "+","+"Z-Pos"+","+"X-Pos"+'\n')
 #T is used as an incremental value to represent time in
 #the Solar System file
 T=0
+d = open("Cannon", "w")
+d.write(" Y coordinate "+":"+ " X coordinate "+":" " Time "+'\n')
 
 
 
@@ -116,12 +118,13 @@ def cannon_sim(self):
     self.velocityX=math.cos(45)*self.velocity
     self.velocityY=math.sin(45)*self.velocity
     self.gravity= 9.8
+    d.write(str(round(self.apple.y,2))+","+str(round(self.apple.z,2))+","+str(round(self.t,2))+"\n")
+    self.e = Entity(model='cube', color=color.orange, scale=(0.05,time.dt,1),position=(self.apple.x,self.apple.y,self.apple.z), rotation=(0,0,0), texture='brick')
+    self.apple.z +=0+self.velocityX*time.dt
+    self.apple.y = 0+self.velocityY*self.t-((self.gravity*(self.t*self.t))/2)
+    self.apple.x = self.x  
     
-    self.apple.z +=self.z+self.velocityX*time.dt
-    self.apple.y = self.y+self.velocityY*self.t-(4.9*(self.t*self.t))
-    self.apple.x = self.position.x  
     
-    self.e.position=(self.x,self.apple.y,self.apple.z)
 
 def while_sim(self):
   if abs(self.player.x-self.block.x)<=.1 and abs(self.player.z-self.block.z)<=.1:
