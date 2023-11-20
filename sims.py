@@ -1,7 +1,7 @@
 from ursina import *
-import math
+from math import *
 from time import process_time 
-
+import os.path
 #f writes to the Pendulum file, so students can graph and chart
 # based off the values they input for Amplitude and Frequency
 f = open("Pendulum", "w") 
@@ -14,7 +14,10 @@ p.write("time "+","+"Z-Pos"+","+"X-Pos"+'\n')
 #T is used as an incremental value to represent time in
 #the Solar System file
 T=0
-d = open("Cannon", "w")
+path = r"C:\Users\Zach's LapTop\onedrive\desktop\gitlabcraft\labcraftzach\Test"
+name_of_file= "cannon"
+complete_path=os.path.join(path+name_of_file)
+d = open(complete_path, "w")
 d.write(" Y coordinate "+":"+ " X coordinate "+":" " Time "+'\n')
 
 
@@ -113,15 +116,18 @@ def apple_sim(self):
   
 
 def cannon_sim(self):
+    print(self.Angle)
     self.t+=time.dt
-    self.velocity=10
-    self.velocityX=math.cos(45)*self.velocity
-    self.velocityY=math.sin(45)*self.velocity
+    
+    angle_rad = radians(self.Angle)
+    self.rotation=(self.Angle,180,0)
+    self.velocityX=math.cos(angle_rad)*self.Velocity
+    self.velocityY=math.sin(angle_rad)*self.Velocity
     self.gravity= 9.8
     d.write(str(round(self.apple.y,2))+","+str(round(self.apple.z,2))+","+str(round(self.t,2))+"\n")
     self.e = Entity(model='cube', color=color.orange, scale=(0.05,time.dt,1),position=(self.apple.x,self.apple.y,self.apple.z), rotation=(0,0,0), texture='brick')
     self.apple.z +=0+self.velocityX*time.dt
-    self.apple.y = 0+self.velocityY*self.t-((self.gravity*(self.t*self.t))/2)
+    self.apple.y = 2.3+self.velocityY*self.t-((self.gravity*(self.t*self.t))/2)
     self.apple.x = self.x  
     
     

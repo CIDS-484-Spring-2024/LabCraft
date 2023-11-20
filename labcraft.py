@@ -2,7 +2,7 @@ from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 import contextlib
-
+import math
 
 #from terraingen import *
 window.borderless = True
@@ -838,6 +838,17 @@ class cannon(Button):
     #is weird in it's update function
     global q
     q = 0
+    global cannonO
+    cannonO = 0
+    global CannonVarChange
+    CannonVarChange = 0
+    global angle
+    global Angle
+    global velocity
+    global Velocity
+    angle = 0
+    velocity = 0
+    
     def __init__(self,position=(0,0,0)):
         super().__init__(
             parent = scene,
@@ -851,20 +862,31 @@ class cannon(Button):
         #this is the prompt for the user to fire, it has to be a boolean other wise
         #once it's hovered over it'll never stop being enabled, that lil tidbit was provided
         #through ChatGPT thanks AI!
-        cannon.tooltip=Tooltip("press F to fire", enabled=False)
+        
+        cannon.tooltip=Tooltip("press F to fire,\npress O to change angle or velocity", enabled=False)
+        
         self.apple = Entity(model="assets/block", scale=0.1,texture=apple_texture,Collider="mesh")
         self.apple.x=self.position.x
         self.apple.z=self.position.z+1.7
         self.apple.y=math.tan(45)*1.6
         self.t=0.0
-        self.velocity=0.0
+        self.Velocity=10.0
         self.e = Entity(model='cube', color=color.orange, scale=(0.05,time.dt,1),position=(-10,-10,-10), rotation=(0,0,0), texture='brick')
+        self.Angle = 45
     def update(self):
         global q
         global Cannonplace
+        global cannonO
+        global CannonVarChange
+        global Angle
+        global Velocity
+        global angle
+        global velocity
+        
+        #print(CannonVarChange)
         if self.hovered:
             cannon.tooltip.enabled=True
-        if not self.hovered:
+        if not self.hovered or cannonO != 0:
             cannon.tooltip.enabled=False
        
         if self.hovered and held_keys['f']:
@@ -875,20 +897,65 @@ class cannon(Button):
             q=1
             boom_sound.play()
         #which triggers the update function
-        if q !=0:
+
+        if self.hovered and held_keys['o']:
+            global AmpInput
+            global FreqInput
+            global game_state
+            
+            game_state = 3
+            cannonO = 1
+            
+        #These are input fields for the Amplitude and Frequency Changes in game
+            VelocityInput = InputField()
+            AngleInput = InputField(y=.1)
+            global VelButt
+            global AngButt
+        #These are the Buttons used for confirming Amplitude and Frequency
+            VelButt = Button(scale=.05, x=-.4)
+            AngButt = Button(scale=.05, x=-.4, y=.1)
+            VelButt.tooltip = Tooltip("Enter a Velocity, then click me")
+            AngButt.tooltip = Tooltip("Enter an Angle, then click me")
+            def AngleReturn():
+                global CannonVarChange
+                global velocity
+                global Velocity
+                velocity = int(float(VelocityInput.text))
+                self.Velocity = velocity
+                destroy(VelButt)
+                destroy(VelocityInput)
+                CannonVarChange += 1
+            def VelocityReturn():
+                global CannonVarChange
+                global angle
+                global Angle
+                angle=int(float(AngleInput.text))
+                self.Angle= angle 
+                destroy(AngButt)
+                destroy(AngleInput)
+                CannonVarChange += 1
+               
+               
+            VelButt.on_click = AngleReturn
+            AngButt.on_click = VelocityReturn
+        if CannonVarChange == 2:
+            game_state = 1
+            cannonO = 0
+            CannonVarChange = 0
+        if q !=0 and cannonO == 0:
             cannon_sim(self)
             
-        #global q
+        
         #then when the apple is more than 10 blocks away in the z axis
         #q is reset to 0 the apple is moved back and you can fire again
-       # if self.apple.y <= .009:
-         #   self.apple.z=self.position.z+1.7
-          #  self.apple.y=math.tan(45)*1.6
-          #  self.velocity=0.0
-         #   self.t=0.0
-         #   q=0
-        with contextlib.suppress(AssertionError):
-         if self.hovered and held_keys['right mouse']:
+        if self.apple.y <= .009:
+            self.apple.z=self.position.z+1.7
+            self.apple.y=math.tan(45)*1.6
+            self.velocity=0.0
+            self.t=0.0
+            q=0
+        
+        if self.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.apple)
             destroy(self.e)
