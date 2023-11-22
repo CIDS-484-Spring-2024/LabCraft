@@ -4,21 +4,21 @@ from time import process_time
 import os.path
 #f writes to the Pendulum file, so students can graph and chart
 # based off the values they input for Amplitude and Frequency
-f = open("Pendulum", "w") 
-f.write("time "+"oscilations "+'\n')
+Pend_file = open("Pendulum", "w") 
+Pend_file.write("time "+"oscilations "+'\n')
 #p writes to the earth file, so students can graph and chart
 #based off of the X position the Z position, and the time it takes to complete
 #them with the System sim
-p = open("earth", "w")
-p.write("time "+","+"Z-Pos"+","+"X-Pos"+'\n')
+Earth_file = open("earth", "w")
+Earth_file.write("time "+","+"Z-Pos"+","+"X-Pos"+'\n')
 #T is used as an incremental value to represent time in
 #the Solar System file
 T=0
 path = r"C:\Users\Zach's LapTop\onedrive\desktop\gitlabcraft\labcraftzach\Test"
 name_of_file= "cannon"
 complete_path=os.path.join(path+name_of_file)
-d = open(complete_path, "w")
-d.write(" Y coordinate "+":"+ " X coordinate "+":" " Time "+'\n')
+Cannon_file = open(complete_path, "w")
+Cannon_file.write(" Y coordinate "+":"+ " X coordinate "+":" " Time "+'\n')
 
 
 
@@ -74,7 +74,7 @@ def oscSim(self):
  self.pluto.z = 26*math.sin(.01*(self.t)) + self.position.z
 
  global T
- p.write(str(T)+","+str(round(self.earth.z,2))+","+str(round(self.earth.x,2))+"\n")
+ Earth_file.write(str(T)+","+str(round(self.earth.z,2))+","+str(round(self.earth.x,2))+"\n")
  T=T+1
  #self.moon rotates around the earth using the exact same code that the earth does
  #but instead of using self.position you use self.earth
@@ -103,7 +103,7 @@ def simple_pendulum(self):
  #the values writen to the file is the angle and whatever the time is for the corresponding angle
  #if you want to change any variable for the file, just delete the variable that is inside the 
  #(round(EXAMPLE,2)) code.
- f.write(str(round(self.t,2))+","+str(round(format,2))+"\n")
+ Pend_file.write(str(round(self.t,2))+","+str(round(format,2))+"\n")
 #beginning of apple sim
 def apple_sim(self):
   
@@ -116,7 +116,8 @@ def apple_sim(self):
   
 
 def cannon_sim(self):
-    print(self.Angle)
+    #using the formula for the point of a projectile at a given moment 
+    #this simulation was created
     self.t+=time.dt
     
     angle_rad = radians(self.Angle)
@@ -124,7 +125,7 @@ def cannon_sim(self):
     self.velocityX=math.cos(angle_rad)*self.Velocity
     self.velocityY=math.sin(angle_rad)*self.Velocity
     self.gravity= 9.8
-    d.write(str(round(self.apple.y,2))+","+str(round(self.apple.z,2))+","+str(round(self.t,2))+"\n")
+    Cannon_file.write(str(round(self.apple.y,2))+","+str(round(self.apple.z,2))+","+str(round(self.t,2))+"\n")
     self.e = Entity(model='cube', color=color.orange, scale=(0.05,time.dt,1),position=(self.apple.x,self.apple.y,self.apple.z), rotation=(0,0,0), texture='brick')
     self.apple.z +=0+self.velocityX*time.dt
     self.apple.y = 2.3+self.velocityY*self.t-((self.gravity*(self.t*self.t))/2)
@@ -133,6 +134,8 @@ def cannon_sim(self):
     
 
 def while_sim(self):
+  #simple while loop sim, while the player is in the block it's night
+  #while the player is out of the block it's day
   if abs(self.player.x-self.block.x)<=.1 and abs(self.player.z-self.block.z)<=.1:
             self.block.color=color.blue
             self.Night=0
@@ -140,10 +143,7 @@ def while_sim(self):
             self.block.color=color.red
             self.Night=1
 def FV_sim(self):
-   #self.z
-   
-   
-  
+   #simple force vector sim have fun seeing what you can do
    self.y=self.y
    self.x+=1
    self.e = Entity(model='cube', color=color.orange, position=(self.x,self.y,self.z), scale=0.5, rotation=(0,0,0), texture='brick')
@@ -152,24 +152,35 @@ def FV_sim(self):
    
    
 def Friction_sim(self):
-    if self.b > 0:
+   #Simple friction sim an initial forcce is decremented exponetially by a friction force
+    if self.FricCo > 0:
       #initial force
-      self.x=self.x+(5*time.dt)*self.b
+      self.x=self.x+(5*time.dt)*self.FricCo
       #friction force
-      self.b=self.b-.1
-      print(self.b)
+      self.FricCo=self.FricCo-.1
     self.z=self.z
 def Loop_sim(self):
-  q= 4*time.dt
+  #This is to make it less flashy
+  Time_incr= 2*time.dt
+  
+  #For_Loop made out of if statements
+  #because game loops don't apprieciate while or for loops
+  
+  #checks to see if the player is inside the block
   if abs(self.player.x-self.block.x)<=.5 and abs(self.player.z-self.block.z)<=.5:
-           if self.t<100:
-               print(int(self.t))
-               self.t+=q
+           #then for 10 seconds
+           #t is in cremented by 2 
+           #and if the modulous of that is 1 we have day
+           #and if it's 0 we have night
+           if self.t<10:
+              
+               self.t+=Time_incr
                if int(self.t)%2==1:
                    self.Night=1
                if int(self.t)%2==0:
                    self.Night=0
-           if self.t>=100:
+           #then at the end everything is set back to 0
+           if self.t>=10:
                self.Night=1
                
                

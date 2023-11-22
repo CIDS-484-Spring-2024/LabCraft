@@ -1,16 +1,15 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
-import contextlib
 import math
 
 #from terraingen import *
 window.borderless = True
 
 
-#d is the csv file object that is used for the save system
-d = open("placed", "a")
-d.close()
+#save is the csv file object that is used for the save system
+save = open("placed", "a")
+save.close()
 
 app = Ursina()
 global player
@@ -66,8 +65,13 @@ Slidetexture3=load_texture('assets/Slide 3.png')
 # sound effects
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 boom_sound = Audio('assets/BOOM', loop= False, autoplay=False)
+#night is a variable that is used to change the sky box
+#initially it is set to 0 which is the day sky
 global Night
 Night=1
+#Cannon place is a variable that is used to limit the number of cannons placed
+#in game too 1 as there is an assertion error that occurs when there are multiple
+#cannons and one is deleted
 global Cannonplace
 Cannonplace=0
 
@@ -91,6 +95,7 @@ block_pick = 0 # default empty hand
  1: active gameplay
  2: inventory menu screen
  """
+#game_state is set to 5 initially for the title screen
 global game_state
 game_state = 5
 
@@ -99,26 +104,30 @@ window.exit_button.visible = True
 
 debug = True
 
-
-Bob=Sprite(model="quad", texture="assets/Slide1.png", position=(0,1.25,8))
-CoBoo = Button(scale=(.5,.1), x=-.6,y=-.2,color=color.rgb(189,0,255),text="Start Game")
-
-BooCo = Button(scale=(.3,.1),x=-.7,y=-.3,color=color.rgb(1,255,31),text="Exit Game")
+#Title_Screen is just a Quad whose texture changes based off of a timer.
+Title_Screen=Sprite(model="quad", texture="assets/Slide1.png", position=(0,1.25,8))
+#Start Button Entity
+Start_Button = Button(scale=(.5,.1), x=-.6,y=-.2,color=color.rgb(189,0,255),text="Start Game")
+#Exit Button Entity
+Exit_Button = Button(scale=(.3,.1),x=-.7,y=-.3,color=color.rgb(1,255,31),text="Exit Game")
+#slide int is an integer that determines the current slide based off of %3
 global slideint
 slideint=0
+
 app.frameRateMeter=True
 app.frame_rate=60
+
 def update():
-  
+    #JetPack Zoom Zoom
     if held_keys['v']:
         player.y+=10
     global game_state
     global block_pick
+    #game_start is a function that is called when the start_button and resume button
+    #are clicked to set the game_state to 1 
     def gamestart():
         global game_state
-        global ground
         game_state=1
-        ground==1
     global debug
     global Night
     tray = raycast(player.position, player.forward, ignore=[player])
@@ -128,14 +137,12 @@ def update():
     # === Game States ===
   
     if held_keys['e'] and game_state == 1 :
-        global x
-        x=0
+       
         game_state = 2
         
     
     if held_keys['q'] and game_state == 2 :
         
-        x=2
         game_state = 1
     
     if game_state == 1: # main game state
@@ -147,9 +154,9 @@ def update():
         hotbar.enabled=True
         hotbar_BG.enabled=True
         hotbar_cursor.enabled=True
-        Bob.enabled=False
-        CoBoo.enabled=False
-        BooCo.enabled=False
+        Title_Screen.enabled=False
+        Start_Button.enabled=False
+        Exit_Button.enabled=False
 
         # animate the hand to move back and forth when clicked
         if held_keys['left mouse'] or held_keys['right mouse']:
@@ -164,19 +171,22 @@ def update():
 
 
     #game_state 3 is used for the in game pedulumn Amp/Freq changes
+    #as well as the cannons
     #this is needed as it frees the cursor from the camera
     #so the player can click the buttons and input field
     if game_state == 3: 
         player.enabled = False
         inventory_BG.enabled = False
         inventory.enabled = False
+    #4 is for Night Sky texture
     if game_state == 4:
         player.enabled = True
         inventory_BG.enabled = False
         inventory.enabled = False
         Sky.texture=night_sky_texture
+    #5 is for the title screen
     if game_state == 5:
-        global ground
+       
         global slideint
         player.enabled = False
         inventory_BG.enabled = False
@@ -187,17 +197,18 @@ def update():
         hotbar_BG.enabled=False
         hotbar_cursor.enabled=False
         if int(slideint%3)==0:
-         Bob.texture=Slidetexture1
+         Title_Screen.texture=Slidetexture1
         if int(slideint%3)==1:
-         Bob.texture=Slidetexture2
+         Title_Screen.texture=Slidetexture2
         if int(slideint%3)==2:
-         Bob.texture=Slidetexture3
+         Title_Screen.texture=Slidetexture3
         slideint+=(.5*time.dt)
-        CoBoo.on_click=(gamestart)
-        BooCo.on_click=application.quit
+        Start_Button.on_click=(gamestart)
+        Exit_Button.on_click=application.quit
+    #6 is for pause screen
     if game_state == 6:
-        
-        CoBoo.text="Resume Game"
+        #Start_Button text is changed to "Resume game"
+        Start_Button.text="Resume Game"
         player.enabled = False
         inventory_BG.enabled = False
         inventory.enabled = False
@@ -207,12 +218,12 @@ def update():
         hotbar_BG.enabled=False
         hotbar_cursor.enabled=False
         
-        CoBoo.on_click=(gamestart)
-        BooCo.on_click=application.quit
+        Start_Button.on_click=(gamestart)
+        Exit_Button.on_click=application.quit
     if held_keys['escape'] and game_state!=5:
-          
-             BooCo.enabled = True
-             CoBoo.enabled = True
+
+             Exit_Button.enabled = True
+             Start_Button.enabled = True
              player.enabled = False
              game_state=6
     # if player falls through the map, return to starting point.
@@ -225,15 +236,7 @@ def update():
         player.x = 1
         player.z = 1
     
-    #if player goes to high return to starting point.
-   # if player.position.y > 20:
-
-        #if debug == True:
-            #print("reverse falling!")
-        
-        #player.y =1
-        #player.x =1
-        #player.z =1
+ 
 
 
 # === Class Declarations ===
@@ -375,7 +378,7 @@ class InvItem(Draggable):
         # i honestly forgot what this does or why i included it here
         #commenting this out, seemed to fix part of the issues with the inventory as now 
         # I can place the inv items in any slot they still dissapear if overlapped with eachother
-       # self.xy_pos = (self.x, self.y)
+       
 
     def overlap_check(self):
         # check for overlap with another item
@@ -542,8 +545,7 @@ class Voxel(Button):
           
             color = color.color(0,0,random.uniform(0.9,1)),
             scale = 0.5)
-        global ground
-        ground=0
+        
       
     def update(self):
 
@@ -551,6 +553,8 @@ class Voxel(Button):
             self.texture=grass_texture
         if game_state==4:
             self.texture=space_texture
+        #at the start menu the blocks are invisible and the player is disenabled, because I'm the ducttape equivalent 
+        #of a programmer, it isn't pretty but it works
         if game_state==5:
             self.texture=invisible_texture
     
@@ -584,12 +588,12 @@ class Voxel(Button):
                     place3=place2.replace("(","")
                     #then the next
                     place4=place3.replace(")","")
-                    d = open("placed","a")   
+                    save = open("placed","a")   
                     #place4 is the position stripped just to a tupple
                     #the middle digit is the block type which is used in the match case statement in the terrain instantiation
                     #the final digit is just used as a boolean for placed, or destroyed
-                    d.write(place4+","+"1"+","+"1"+'\n')
-                    d.close
+                    save.write(place4+","+"1"+","+"1"+'\n')
+                    save.close
                     
                    
                 if block_pick == 2:
@@ -602,9 +606,9 @@ class Voxel(Button):
                     place2=place1.replace("Vec3","")
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
-                    d = open("placed","a")   
-                    d.write(place4+","+"2"+","+"1"+'\n')
-                    d.close
+                    save = open("placed","a")   
+                    save.write(place4+","+"2"+","+"1"+'\n')
+                    save.close
                 if block_pick == 3:
                     voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
                     #exact same logic as the grass block
@@ -614,9 +618,9 @@ class Voxel(Button):
                     place2=place1.replace("Vec3","")
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
-                    d = open("placed","a")   
-                    d.write(place4+","+"3"+","+"1"+'\n')
-                    d.close
+                    save = open("placed","a")   
+                    save.write(place4+","+"3"+","+"1"+'\n')
+                    save.close
                 if block_pick == 4 and game_state!=5: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
                     #exact same logic as the grass block
@@ -626,9 +630,9 @@ class Voxel(Button):
                     place2=place1.replace("Vec3","")
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
-                    d = open("placed","a")   
-                    d.write(place4+","+"4"+","+"1"+'\n')
-                    d.close
+                    save = open("placed","a")   
+                    save.write(place4+","+"4"+","+"1"+'\n')
+                    save.close
                 if block_pick == 5: 
                     voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
                     #exact same logic as the grass block
@@ -638,9 +642,9 @@ class Voxel(Button):
                     place2=place1.replace("Vec3","")
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
-                    d = open("placed","a")   
-                    d.write(place4+","+"5"+","+"1"+'\n')
-                    d.close
+                    save = open("placed","a")   
+                    save.write(place4+","+"5"+","+"1"+'\n')
+                    save.close
                 if block_pick == 6: 
                     voxel = pendulum(position = self.position+mouse.normal, texture = pendulum_texture)
                     #exact same logic as the grass block
@@ -649,29 +653,26 @@ class Voxel(Button):
                     place2=place1.replace("Vec3","")
                     place3=place2.replace("(","")
                     place4=place3.replace(")","")
-                    d = open("placed","a")   
-                    d.write(place4+","+"6"+","+"1"+'\n')
-                    d.close
+                    save = open("placed","a")   
+                    save.write(place4+","+"6"+","+"1"+'\n')
+                    save.close
                 #tells the game to load the apple block
                 if block_pick == 7:
                     voxel = apple(position = self.position+mouse.normal)
                 if block_pick==8 and Cannonplace<1:
-                   
+                    #we set CannonPlace to 1 once it's placed
+                    #and set it back to 0 when it's destroyed
+                    #this limits the Cannons to 1
                     voxel = cannon(position =self.position+mouse.normal)
                     Cannonplace = 1
-                    print(Cannonplace)
                 if block_pick==9:
                     voxel = whileloop(position = self.position + mouse.normal)
-                  
-
                 if block_pick==10:
                     voxel = FVSim(position=self.position + mouse.normal)
                 if block_pick==11:
                     voxel = FrictionSim(position=self.position+mouse.normal)
                 if block_pick==12:
                     voxel = ForLoop(position=self.position+mouse.normal)
-               
-
             if key == 'right mouse down':
                 global typea
                 punch_sound.play()
@@ -680,7 +681,6 @@ class Voxel(Button):
                 #typea is an int that is used with a matchcase to set typeb to a number
                 #using the match case below this is used later in the code with the placing/destroying logic
                 typea=0
-               
                 match typeb:
                     case "grass_block.png":
                         typea=1
@@ -701,9 +701,9 @@ class Voxel(Button):
                 place2=place1.replace("Vec3","")
                 place3=place2.replace("(","")
                 place4=place3.replace(")","")
-                d = open("placed","a")  
-                d.write(place4+","+str(typea)+","+"0"+'\n')
-                d.close
+                save = open("placed","a")  
+                save.write(place4+","+str(typea)+","+"0"+'\n')
+                save.close
                 destroy(self)
                 
 
@@ -714,17 +714,18 @@ class Sky(Entity):
         super().__init__(
             parent = scene,
             model = 'sphere',
-           
             texture=sky_texture or night_sky_texture,
             scale = 1500,
             double_sided = True)
+        #Here we just do a simple check to see if 
+        #gamestate is 1 or 4 to determine the texture
         if game_state==1:
             self.texture=sky_texture
         if game_state==4:
             self.texture=night_sky_texture
     def update(self):
         global Night
-        
+        #This is for the sims, that change the skybox during gameplay
         if Night == 0:
             self.texture=night_sky_texture
         if Night == 1:
@@ -738,10 +739,8 @@ class Hand(Entity):
             scale = 0.2,
             rotation = Vec3(150,-10,0),
             position = Vec2(0.4,-0.6)),
-
     def active(self):
         self.position = Vec2(0.3,-0.5)
-
     def passive(self):
         self.position = Vec2(0.4,-0.6)
 class whileloop(Button):
@@ -760,14 +759,15 @@ class whileloop(Button):
         self.y=-2
         self.player=player
         self.t=0
-        
+        #we set the sim version of Night to one
+        #and pass it the actual version of Night
+        #in the update function
         self.Night=1
     def update(self):
         while_sim(self)
         if self.block.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.block)
-        
         global Night
         Night = self.Night
 class ForLoop(Button):
@@ -777,23 +777,21 @@ class ForLoop(Button):
             position = position,
             model = 'assets/block',
             scale = .5
-        
             )
          self.block=Entity(model='assets/block', scale=.5, color = color.red)
-         
          self.block.x=self.x 
          self.block.y=self.y+.5
          self.block.z=self.z 
          self.y=-2
          self.player=player
          self.t=0
+         #Same as the While Loop
          self.Night=1
     def update(self):
          Loop_sim(self)
          if self.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.block)
-         
          global Night
          Night = self.Night
 class FrictionSim(Button):    
@@ -804,17 +802,15 @@ class FrictionSim(Button):
             model = 'sphere',
             color=color.turquoise,
             origin_y=0.5,
-            scale = 1
-            
-            
+            scale = 1 
         )
-        self.b=10
+        #Friction Coefficient that can be changed in the sim file
+        self.FricCo=10
      def update(self):
         Friction_sim(self)
         if self.hovered and held_keys['right mouse']:
             destroy(self)
 class FVSim(Button):
-    
     def __init__(self,position=(0,0,0)):
         super().__init__(
             parent = scene,
@@ -823,25 +819,27 @@ class FVSim(Button):
             color=color.red,
             origin_y=0.5,
             scale = 0.5
-            
-            
         )
         self.t=0.0
-        self.b=10
-        #self.block=Entity(model='assets/block', scale=.5, color = color.red)
     def update(self):
         FV_sim(self)
         if self.hovered and held_keys['right mouse']:
             destroy(self)
 class cannon(Button):
-    #q is used as a boolean, I would use a regular Boolean but Ursina
+    #reset is used as a boolean, I would use a regular Boolean but Ursina
     #is weird in it's update function
-    global q
-    q = 0
+    global reset
+    reset = 0
+    #Cannon O is similar to the variable used
+    #with the pendulum options and is just used to keep track 
+    #of whether or not the player has changed all the variables
     global cannonO
     cannonO = 0
+    #same as with this one
     global CannonVarChange
     CannonVarChange = 0
+    #these are used for changing the values of the 
+    #angle and velocity in game
     global angle
     global Angle
     global velocity
@@ -870,11 +868,14 @@ class cannon(Button):
         self.apple.z=self.position.z+1.7
         self.apple.y=math.tan(45)*1.6
         self.t=0.0
+        #Velocity is initially set to 10 until the player changes it
         self.Velocity=10.0
         self.e = Entity(model='cube', color=color.orange, scale=(0.05,time.dt,1),position=(-10,-10,-10), rotation=(0,0,0), texture='brick')
+        #and Angle is set to 45 degrees, not radians because radians are stupid
+        #and I will die on this hill
         self.Angle = 45
     def update(self):
-        global q
+        global reset
         global Cannonplace
         global cannonO
         global CannonVarChange
@@ -883,48 +884,59 @@ class cannon(Button):
         global angle
         global velocity
         
-        #print(CannonVarChange)
+        #this checks to make sure that the player is not currently in the options menu
+        #before displaying the tooltip
         if self.hovered:
             cannon.tooltip.enabled=True
+        
         if not self.hovered or cannonO != 0:
             cannon.tooltip.enabled=False
        
         if self.hovered and held_keys['f']:
-            #global q
-            #the reason q is needed is because Ursina doesn't handle single key presses
-            #in the update function very well so pressing f makes q = to 1
+            global reset
+            #the reason reset is needed is because Ursina doesn't handle single key presses
+            #in the update function very well so pressing f makes reset = to 1
             print(self.z,self.x)
-            q=1
+            reset=1
             boom_sound.play()
         #which triggers the update function
-
         if self.hovered and held_keys['o']:
             global AmpInput
             global FreqInput
             global game_state
-            
+            #if o is pressed the player controller is disabled along with the tooltip
             game_state = 3
             cannonO = 1
             
-        #These are input fields for the Amplitude and Frequency Changes in game
+        #These are input fields for the Velocity and Angles Changes in game
             VelocityInput = InputField()
             AngleInput = InputField(y=.1)
             global VelButt
             global AngButt
-        #These are the Buttons used for confirming Amplitude and Frequency
+        #These are the Buttons used for confirming Velocity and Angle
             VelButt = Button(scale=.05, x=-.4)
             AngButt = Button(scale=.05, x=-.4, y=.1)
             VelButt.tooltip = Tooltip("Enter a Velocity, then click me")
             AngButt.tooltip = Tooltip("Enter an Angle, then click me")
+            #I don't know how I got these mixed up, but this is what
+            #works if you've read this far please feel free to fix it
+            #but I know you didn't read this far
+            
             def AngleReturn():
                 global CannonVarChange
                 global velocity
                 global Velocity
+                #this takes whatever the player enters in the velocity text
+                #box
                 velocity = int(float(VelocityInput.text))
+                #and sets the sim velocity to that
                 self.Velocity = velocity
+                #it then destroys the button and input field
                 destroy(VelButt)
                 destroy(VelocityInput)
+                #and incremts the CVC by 1
                 CannonVarChange += 1
+            #Same as the above method just for the angle
             def VelocityReturn():
                 global CannonVarChange
                 global angle
@@ -938,28 +950,30 @@ class cannon(Button):
                
             VelButt.on_click = AngleReturn
             AngButt.on_click = VelocityReturn
+        #this then checks to see if CVC is two which sets 
+        #everything back to 0 and let's the player play again
         if CannonVarChange == 2:
             game_state = 1
             cannonO = 0
             CannonVarChange = 0
-        if q !=0 and cannonO == 0:
+        if reset !=0 and cannonO == 0:
             cannon_sim(self)
             
         
-        #then when the apple is more than 10 blocks away in the z axis
-        #q is reset to 0 the apple is moved back and you can fire again
+        #then when the apple is below the ground
+        #rest is reset to 0 the apple is moved back and you can fire again
         if self.apple.y <= .009:
             self.apple.z=self.position.z+1.7
             self.apple.y=math.tan(45)*1.6
             self.velocity=0.0
             self.t=0.0
-            q=0
+            reset=0
         
         if self.hovered and held_keys['right mouse']:
             destroy(self)
             destroy(self.apple)
             destroy(self.e)
-            q=0
+            reset=0
             Cannonplace=0
      
     
@@ -1148,17 +1162,17 @@ for x in range(30):
     for z in range(30):
         terrainy[x][z]="*"
 
-#Lrow=0
+
 Lrow=random.randint(0,15)
-#Lcol=0
+
 Lcol=random.randint(0,15)
-#Hrow=10
+
 Hrow=random.randint(15,30)
-#Hcol=10
+
 Hcol=random.randint(15,30)
-#Hpoint=10
+
 Hpoint=random.randint(-15,0)
-#Lpoint=0
+
 Lpoint=random.randint(-30,-15)
 maxrecur=0
 mid=(Hpoint+Lpoint)/2
@@ -1227,9 +1241,7 @@ def terrainGen():
             voxel = Voxel(position = (x,0,z),texture=grass_texture)
             #uncomment this for the random terrain gen
             #voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
-            a=open("terrain","w")
-            a.write(str(terrainy))
-            a.close
+          
  
  
     #here is the start of the save system logic
@@ -1312,5 +1324,5 @@ test_item9 = InvItem(inventory, hotbar, 9, inventory.find_free_cell())
 test_item10 = InvItem(inventory, hotbar, 10, inventory.find_free_cell())
 test_item11 = InvItem(inventory, hotbar, 11, inventory.find_free_cell())
 test_item12 = InvItem(inventory, hotbar, 12, inventory.find_free_cell())
-with contextlib.suppress(AssertionError):
-    app.run()
+
+app.run()
