@@ -76,8 +76,14 @@ python labcraft.py
     NEXT GAME!!! (DELETED BLOCKS WILL NOT BE DELETED BUT THIS IS BEING WORKED ON)
     
  -THE EARTH ROTATES!!! LEON FOUCAULT EAT YOUR HEART OUT
+
+ -New Sims! We've got a Cannon, We've got apples, We've even got visual representations of FOR LOOOOOOOPS 
+
+ -Also other computer logic statements, but FOOOOOOOOOOOOOOOOR LOOOOOOOOOOPS is the most impressive
+
+ -I have started work on an in game code editor that will actually change the code of the game itself. This will be the focus of my CapStone project.
  
- -SOME MINOR QOL CHANGES, YOU CAN NO LONGER CLIMB INFINATELY AND THE INVENTORY
+ 
 <<<<<<< HEAD
     STACK ISSUE IS BEING WORKED ON.
 =======
