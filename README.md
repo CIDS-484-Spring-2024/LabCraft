@@ -82,11 +82,3 @@ python labcraft.py
  -Also other computer logic statements, but FOOOOOOOOOOOOOOOOR LOOOOOOOOOOPS is the most impressive
 
  -I have started work on an in game code editor that will actually change the code of the game itself. This will be the focus of my CapStone project.
- 
- 
-<<<<<<< HEAD
-    STACK ISSUE IS BEING WORKED ON.
-=======
-    STACK ISSUE IS BEING WORKED ON.
-
->>>>>>> refs/remotes/origin/main
