@@ -63,8 +63,7 @@ python labcraft.py
 - assets:
   Folder that contains all of the models, textures and audio files.
 <<<<<<< HEAD
-# NEW FEATURES:
-=======
+
  # NEW FEATURES:
 >>>>>>> refs/remotes/origin/main
  -WRITE VALUES TO A FILE ON YOUR COMPUTER WITH THE PLANET AND PENDULUM SIM,
