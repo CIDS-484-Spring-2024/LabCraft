@@ -3,7 +3,7 @@ A Digital Physics Lab in a Blocky Voxel World
 
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
-
+The purpose of this project is to develop a Virtual Environment (V.E) in which students can learn how to code through working on simulations, I have been working on this project with Dr. Trevor Tomesh, since February of 2023, and we plan on publishing a paper together by the end of this semester. My work this semester will be to establish an in game code editor that actually changes the code of the game file, as not to overwhelm new coders with the (as of 2/5/2024) 2000+ lines of code. Below you can see the features I've added since starting my work which I go into more detail in my walkthrough video. 
 # Dependencies:
 ## On Linux: 
 Labcraft uses python 3.6:
@@ -63,10 +63,9 @@ python labcraft.py
 - assets:
   Folder that contains all of the models, textures and audio files.
 <<<<<<< HEAD
-# NEW FEATURES:
-=======
+
  # NEW FEATURES:
->>>>>>> refs/remotes/origin/main
+
  -WRITE VALUES TO A FILE ON YOUR COMPUTER WITH THE PLANET AND PENDULUM SIM,
     SO YOU CAN CHART AND GRAPH, OR GRAPH AND CHART IF YOU'RE CANADIAN
     
@@ -77,11 +76,9 @@ python labcraft.py
     NEXT GAME!!! (DELETED BLOCKS WILL NOT BE DELETED BUT THIS IS BEING WORKED ON)
     
  -THE EARTH ROTATES!!! LEON FOUCAULT EAT YOUR HEART OUT
- 
- -SOME MINOR QOL CHANGES, YOU CAN NO LONGER CLIMB INFINATELY AND THE INVENTORY
-<<<<<<< HEAD
-    STACK ISSUE IS BEING WORKED ON.
-=======
-    STACK ISSUE IS BEING WORKED ON.
 
->>>>>>> refs/remotes/origin/main
+ -New Sims! We've got a Cannon, We've got apples, We've even got visual representations of FOR LOOOOOOOPS 
+
+ -Also other computer logic statements, but FOOOOOOOOOOOOOOOOR LOOOOOOOOOOPS is the most impressive
+
+ -I have started work on an in game code editor that will actually change the code of the game itself. This will be the focus of my CapStone project.
