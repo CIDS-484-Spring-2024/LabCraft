@@ -106,7 +106,7 @@ def simple_pendulum(self):
  Pend_file.write(str(round(self.t,2))+","+str(round(format,2))+"\n")
 #beginning of apple sim
 def apple_sim(self):
-  
+  self.gravity=9.8/self.t
   self.t += time.dt
   #x and z are the same as the button
   self.apple.x=self.position.x
@@ -146,9 +146,7 @@ def FV_sim(self):
    #simple force vector sim have fun seeing what you can do
    self.y=self.y
    self.x+=1
-   self.e = Entity(model='cube', color=color.orange, position=(self.x,self.y,self.z), scale=0.5, rotation=(0,0,0), texture='brick')
-   if abs(self.e.x-self.x)>=10:
-     destroy(self.e)
+
    
    
 def Friction_sim(self):

@@ -15,7 +15,7 @@ app = Ursina()
 global player
 player = FirstPersonController()
 mouse.locked = True
-window.fullscreen = False
+window.fullscreen = True
 
 # block textures
 grass_texture = load_texture('assets/grass_block.png')
@@ -1236,8 +1236,8 @@ RandomHeight(terrainy,random.randint(0,30),random.randint(0,30),mid)
 
 
 def terrainGen():
- for z in range(30):
-        for x in range(30):
+ for z in range(10):
+        for x in range(10):
             voxel = Voxel(position = (x,0,z),texture=grass_texture)
             #uncomment this for the random terrain gen
             #voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
