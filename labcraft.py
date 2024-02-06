@@ -6,11 +6,6 @@ import math
 #from terraingen import *
 window.borderless = True
 
-
-#save is the csv file object that is used for the save system
-save = open("placed", "a")
-save.close()
-
 app = Ursina()
 global player
 player = FirstPersonController()
@@ -577,85 +572,33 @@ class Voxel(Button):
             
                     voxel.texture=grass_texture
                    
-                    #this next bit is for the save system
-                    #first the position of the voxel is set to the variable place
-                    place=self.position+mouse.normal
-                    #place is then cacacanated to a string
-                    place1=str(place)
-                    #the position is then stripped of the Vec3 leaving just (tuple)
-                    place2=place1.replace("Vec3","")
-                    #it's then stripped of one bracket
-                    place3=place2.replace("(","")
-                    #then the next
-                    place4=place3.replace(")","")
-                    save = open("placed","a")   
-                    #place4 is the position stripped just to a tupple
-                    #the middle digit is the block type which is used in the match case statement in the terrain instantiation
-                    #the final digit is just used as a boolean for placed, or destroyed
-                    save.write(place4+","+"1"+","+"1"+'\n')
-                    save.close
-                    
+                  
                    
                 if block_pick == 2:
                     voxel = Voxel(position = self.position + mouse.normal, texture = stone_texture)
                         #exact same logic as the grass block
                     
                     voxel.texture=stone_texture
-                    place=self.position+mouse.normal
-                    place1=str(place)
-                    place2=place1.replace("Vec3","")
-                    place3=place2.replace("(","")
-                    place4=place3.replace(")","")
-                    save = open("placed","a")   
-                    save.write(place4+","+"2"+","+"1"+'\n')
-                    save.close
+                    
                 if block_pick == 3:
                     voxel = Voxel(position = self.position + mouse.normal, texture = brick_texture)
                     #exact same logic as the grass block
                     voxel.texture=brick_texture
-                    place=self.position+mouse.normal
-                    place1=str(place)
-                    place2=place1.replace("Vec3","")
-                    place3=place2.replace("(","")
-                    place4=place3.replace(")","")
-                    save = open("placed","a")   
-                    save.write(place4+","+"3"+","+"1"+'\n')
-                    save.close
+                 
                 if block_pick == 4 and game_state!=5: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = dirt_texture)
                     #exact same logic as the grass block
                     voxel.texture=dirt_texture
-                    place=self.position+mouse.normal
-                    place1=str(place)
-                    place2=place1.replace("Vec3","")
-                    place3=place2.replace("(","")
-                    place4=place3.replace(")","")
-                    save = open("placed","a")   
-                    save.write(place4+","+"4"+","+"1"+'\n')
-                    save.close
+                    
                 if block_pick == 5: 
                     voxel = solarSystem(position = self.position + mouse.normal, texture = sun_texture)
                     #exact same logic as the grass block
                 
-                    place=self.position+mouse.normal
-                    place1=str(place)
-                    place2=place1.replace("Vec3","")
-                    place3=place2.replace("(","")
-                    place4=place3.replace(")","")
-                    save = open("placed","a")   
-                    save.write(place4+","+"5"+","+"1"+'\n')
-                    save.close
+
                 if block_pick == 6: 
                     voxel = pendulum(position = self.position+mouse.normal, texture = pendulum_texture)
                     #exact same logic as the grass block
-                    place=self.position+mouse.normal
-                    place1=str(place)
-                    place2=place1.replace("Vec3","")
-                    place3=place2.replace("(","")
-                    place4=place3.replace(")","")
-                    save = open("placed","a")   
-                    save.write(place4+","+"6"+","+"1"+'\n')
-                    save.close
+                 
                 #tells the game to load the apple block
                 if block_pick == 7:
                     voxel = apple(position = self.position+mouse.normal)
@@ -696,14 +639,7 @@ class Voxel(Button):
                         typea=6
 
                 #exact same as the logic used for stripping the position of the placed blocks to a tuple
-                place=self.position
-                place1=str(place)
-                place2=place1.replace("Vec3","")
-                place3=place2.replace("(","")
-                place4=place3.replace(")","")
-                save = open("placed","a")  
-                save.write(place4+","+str(typea)+","+"0"+'\n')
-                save.close
+             
                 destroy(self)
                 
 
@@ -1246,57 +1182,7 @@ def terrainGen():
  
     #here is the start of the save system logic
     #first the placed file is opened and read
- with open("placed","r") as file:
-        #then a default texture is defined with 
-        global Text
-        #then a blank list is declared
-        placeList=[]
-        #Can't just declare Text as a variable so Text has a default texture
-        Text=grass_texture
-        for line in file:
-            #the blank list is then appended with the lines in the file
-            placeList.append(line.rstrip())
-        #a is used to step through the list
-        a=0
-        #another blank list is then declared as the previous list was read in as
-        #strings
-        saveList=[]
-        for x in placeList:
-         if not placeList[a]=='':
-          #and the new List is appended with tupples mapped from the string and split with the , delimiter
-          res=tuple(map(int, placeList[a].split(',')))
-          saveList.append(res)
-          #the position of the block is then based off the first 3 numbers of each tupple
-          savePOS=res[:3]
-          #the texture is the 4th number
-          textre=res[3]
-          #and the status is the 5th number
-          PlaceOrDes=res[4]
-          a=a+1
-          #This changes the texture of the block based off of the 4th digit of the tuples in the save file
-          match textre:
-              case 1:
-                  Text=grass_texture
-                  Greg=Voxel
-              case 2:
-                  Text=stone_texture
-                  Greg=Voxel
-              case 3:
-                  Text=brick_texture
-                  Greg=Voxel
-              case 4:
-                  Text=dirt_texture
-                  Greg=Voxel
-              case 5:
-                  Text=sun_texture
-                  Greg=solarSystem
-              case 6:
-                  Text=pendulum_texture
-                  Greg=pendulum
-          #as long as PlaceOrDes is 1 the block is placed
-          if PlaceOrDes==1:
-           voxel=Greg(position=Vec3(savePOS),texture=Text)
-           #there is more to come with this
+
 terrainGen()
 
 sky = Sky()

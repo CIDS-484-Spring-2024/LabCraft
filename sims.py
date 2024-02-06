@@ -106,7 +106,7 @@ def simple_pendulum(self):
  Pend_file.write(str(round(self.t,2))+","+str(round(format,2))+"\n")
 #beginning of apple sim
 def apple_sim(self):
-  self.gravity=9.8/self.t
+  self.gravity=9.8/self.t +0.000001
   self.t += time.dt
   #x and z are the same as the button
   self.apple.x=self.position.x
