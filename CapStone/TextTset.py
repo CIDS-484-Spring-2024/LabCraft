@@ -1,4 +1,2 @@
-def addem(a, b):
+def addem(a,b):
     c = a + b
-    
-    return c
