@@ -105,6 +105,7 @@ def simple_pendulum(self):
  #(round(EXAMPLE,2)) code.
  Pend_file.write(str(round(self.t,2))+","+str(round(format,2))+"\n")
 #beginning of apple sim
+"""
 def apple_sim(self):
   self.gravity=9.8/(self.t +0.000001)
   self.t += time.dt
@@ -114,7 +115,7 @@ def apple_sim(self):
   #y starts higher then the button so players can get a better look as the apple falls
   self.apple.y=3-self.t
   
-
+"""
 def cannon_sim(self):
     #using the formula for the point of a projectile at a given moment 
     #this simulation was created

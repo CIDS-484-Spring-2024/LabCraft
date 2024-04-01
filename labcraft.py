@@ -1,6 +1,7 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
+from apple_simul import *
 import math
 
 #from terraingen import *
@@ -10,7 +11,7 @@ app = Ursina()
 global player
 player = FirstPersonController()
 mouse.locked = True
-window.fullscreen = True
+window.fullscreen = False
 
 # block textures
 grass_texture = load_texture('assets/grass_block.png')
@@ -56,7 +57,8 @@ hotbar_cursor_texture = load_texture('assets/hotbar_cursor.png')
 Slidetexture1=load_texture('assets/Slide1.png')
 Slidetexture2=load_texture('assets/Slide 2.png')
 Slidetexture3=load_texture('assets/Slide 3.png')
-
+global cupes
+cupes = False
 # sound effects
 punch_sound   = Audio('assets/punch_sound', loop = False, autoplay = False)
 boom_sound = Audio('assets/BOOM', loop= False, autoplay=False)
@@ -180,8 +182,11 @@ def update():
         inventory.enabled = False
         Sky.texture=night_sky_texture
     #5 is for the title screen
+    def supes():
+        global cupes 
+        cupes = True
     if game_state == 5:
-       
+        global cupes
         global slideint
         player.enabled = False
         inventory_BG.enabled = False
@@ -198,6 +203,10 @@ def update():
         if int(slideint%3)==2:
          Title_Screen.texture=Slidetexture3
         slideint+=(.5*time.dt)
+        if held_keys['o']:
+            supes()
+        if cupes:
+            game_state = 7
         Start_Button.on_click=(gamestart)
         Exit_Button.on_click=application.quit
     #6 is for pause screen
@@ -215,6 +224,24 @@ def update():
         
         Start_Button.on_click=(gamestart)
         Exit_Button.on_click=application.quit
+    if game_state == 7:
+        #Start_Button text is changed to "Resume game"
+        
+        window.color = color.color(0, 0, 0)
+        Button.default_color = color._20
+        window.color = color._25
+        Barg = ""
+        with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'r+') as f:
+    # Read the entire content of the file
+            Barg = f.read()
+
+        file_text = TextField(max_lines=30, scale=1, register_mouse_input = True, text='1234',wordwrap = 30)
+        from textwrap import dedent
+        file_text.text = dedent(Barg)
+        file_text.render()
+        if cupes:
+            cupes = False
+    
     if held_keys['escape'] and game_state!=5:
 
              Exit_Button.enabled = True
@@ -290,6 +317,8 @@ class InvItem(Draggable):
         if self.ID == 6: self.texture = pendulum_icon_texture
         #tells the hotbar/inventory to load the apple icon
         if self.ID == 7: self.texture = apple_icon_texture
+        if self.hovered:
+            print("yooooo")
         if self.ID == 8: self.texture = cannon_icon_texture
         if self.ID == 9: self.texture = while_icon_texture
         if self.ID == 10: self.texture = force_vector_icon_texture
@@ -602,6 +631,7 @@ class Voxel(Button):
                 #tells the game to load the apple block
                 if block_pick == 7:
                     voxel = apple(position = self.position+mouse.normal)
+
                 if block_pick==8 and Cannonplace<1:
                     #we set CannonPlace to 1 once it's placed
                     #and set it back to 0 when it's destroyed
@@ -616,6 +646,7 @@ class Voxel(Button):
                     voxel = FrictionSim(position=self.position+mouse.normal)
                 if block_pick==12:
                     voxel = ForLoop(position=self.position+mouse.normal)
+
             if key == 'right mouse down':
                 global typea
                 punch_sound.play()
