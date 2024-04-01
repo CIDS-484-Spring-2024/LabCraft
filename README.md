@@ -82,3 +82,7 @@ python labcraft.py
  -Also other computer logic statements, but FOOOOOOOOOOOOOOOOR LOOOOOOOOOOPS is the most impressive
 
  -I have started work on an in game code editor that will actually change the code of the game itself. This will be the focus of my CapStone project.
+
+ -Added a Ursina test program that lets you edit code and test it while the file is running
+
+ -Started integrating this into LabCraft, this is barebones currently is terrible. But so is the rest of this projects.
