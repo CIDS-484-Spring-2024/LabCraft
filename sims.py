@@ -146,7 +146,7 @@ def while_sim(self):
 def FV_sim(self):
    #simple force vector sim have fun seeing what you can do
    self.y=self.y
-   self.x+=1
+   self.x+=1*time.dt
 
    
    

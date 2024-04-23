@@ -113,7 +113,22 @@ slideint=0
 
 app.frameRateMeter=True
 app.frame_rate=60
+def supes():
+        global cupes 
+        if cupes: 
+            window.color = color.color(0, 0, 0)
+            Button.default_color = color._20
+            window.color = color._25
+            Barg = ""
+            with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'r+') as f:
+    # Read the entire content of the file
+                Barg = f.read()
 
+            file_text = TextField(max_lines=30, scale=1, register_mouse_input = True, text='1234',wordwrap = 30)
+            from textwrap import dedent
+            file_text.text = dedent(Barg)
+            file_text.render()
+            cupes = False
 def update():
     #JetPack Zoom Zoom
     if held_keys['v']:
@@ -182,9 +197,7 @@ def update():
         inventory.enabled = False
         Sky.texture=night_sky_texture
     #5 is for the title screen
-    def supes():
-        global cupes 
-        cupes = True
+    
     if game_state == 5:
         global cupes
         global slideint
@@ -204,9 +217,12 @@ def update():
          Title_Screen.texture=Slidetexture3
         slideint+=(.5*time.dt)
         if held_keys['o']:
-            supes()
-        if cupes:
+            cupes = True
+            #supes()
             game_state = 7
+            
+        #if cupes:
+            #game_state = 7
         Start_Button.on_click=(gamestart)
         Exit_Button.on_click=application.quit
     #6 is for pause screen
@@ -226,21 +242,8 @@ def update():
         Exit_Button.on_click=application.quit
     if game_state == 7:
         #Start_Button text is changed to "Resume game"
-        
-        window.color = color.color(0, 0, 0)
-        Button.default_color = color._20
-        window.color = color._25
-        Barg = ""
-        with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'r+') as f:
-    # Read the entire content of the file
-            Barg = f.read()
-
-        file_text = TextField(max_lines=30, scale=1, register_mouse_input = True, text='1234',wordwrap = 30)
-        from textwrap import dedent
-        file_text.text = dedent(Barg)
-        file_text.render()
-        if cupes:
-            cupes = False
+        supes()
+       
     
     if held_keys['escape'] and game_state!=5:
 
@@ -1203,8 +1206,8 @@ RandomHeight(terrainy,random.randint(0,30),random.randint(0,30),mid)
 
 
 def terrainGen():
- for z in range(10):
-        for x in range(10):
+ for z in range(20):
+        for x in range(20):
             voxel = Voxel(position = (x,0,z),texture=grass_texture)
             #uncomment this for the random terrain gen
             #voxel = Voxel(position = (x,terrainy[x][z],z),texture=grass_texture)
