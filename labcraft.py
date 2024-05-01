@@ -2,13 +2,12 @@ from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 import apple_simul
-from apple_simul import *
+
 import math
 import importlib
 #from terraingen import *
 window.borderless = True
-global reload_bool
-reload_bool = False
+
 app = Ursina()
 global player
 player = FirstPersonController()
@@ -146,23 +145,23 @@ def Write_Meth():
 def Return_Meth():
     global game_state
     global apple_simul
-    global reload_bool
-    reload_bool = True
+
+    reload()
     destroy(file_text)
     Return_Button.enabled=False
     Write_Button.enabled=False
     
     game_state = 1
 def reload():
-    global reload_bool
-    
+   
     importlib.invalidate_caches()
     try:
+        import apple_simul
         print("RELOADIIIIIIIIIIIIIING")
         importlib.reload(apple_simul)
     except:
         print("--------reached---------------")
-    #reload_bool = False
+   
 def update():
     
     #JetPack Zoom Zoom
@@ -660,8 +659,7 @@ class Voxel(Button):
                 global place
                 global typea
                 global Cannonplace
-                global reload_bool
-                reload_bool = True
+               
                 punch_sound.play()
                 if block_pick == 1: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
@@ -1144,7 +1142,7 @@ class apple(Button):
             
     def update(self):
        
-        apple_sim(self)
+        apple_simul.apple_sim(self)
         
         #this destroys the block to prevent memory overflow
         if self.apple.y <= -10:
