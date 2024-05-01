@@ -1,12 +1,14 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
+import apple_simul
 from apple_simul import *
 import math
-
+import importlib
 #from terraingen import *
 window.borderless = True
-
+global reload_bool
+reload_bool = False
 app = Ursina()
 global player
 player = FirstPersonController()
@@ -113,9 +115,15 @@ slideint=0
 
 app.frameRateMeter=True
 app.frame_rate=60
+Write_Button = Button(scale=(.5,.1), x=-.6,y=-.2,color=color.rgb(189,0,255),text="Save Changes")
+Return_Button = Button(scale=(.3,.1),x=-.7,y=-.3,color=color.rgb(1,255,31),text="Return")
+Write_Button.enabled = False
+Return_Button.enabled = False
 def supes():
         global cupes 
+        global file_text
         if cupes: 
+            
             window.color = color.color(0, 0, 0)
             Button.default_color = color._20
             window.color = color._25
@@ -123,16 +131,44 @@ def supes():
             with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'r+') as f:
     # Read the entire content of the file
                 Barg = f.read()
-
+                
             file_text = TextField(max_lines=30, scale=1, register_mouse_input = True, text='1234',wordwrap = 30)
             from textwrap import dedent
             file_text.text = dedent(Barg)
             file_text.render()
+           
             cupes = False
+def Write_Meth():
+    
+    with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'w') as f:
+        f.write(file_text.text)
+    
+def Return_Meth():
+    global game_state
+    global apple_simul
+    global reload_bool
+    reload_bool = True
+    destroy(file_text)
+    Return_Button.enabled=False
+    Write_Button.enabled=False
+    
+    game_state = 1
+def reload():
+    global reload_bool
+    
+    importlib.invalidate_caches()
+    try:
+        print("RELOADIIIIIIIIIIIIIING")
+        importlib.reload(apple_simul)
+    except:
+        print("--------reached---------------")
+    #reload_bool = False
 def update():
+    
     #JetPack Zoom Zoom
     if held_keys['v']:
-        player.y+=10
+        importlib.invalidate_caches()
+        reload()
     global game_state
     global block_pick
     #game_start is a function that is called when the start_button and resume button
@@ -145,7 +181,6 @@ def update():
     tray = raycast(player.position, player.forward, ignore=[player])
     
     
- 
     # === Game States ===
   
     if held_keys['e'] and game_state == 1 :
@@ -158,6 +193,7 @@ def update():
         game_state = 1
     
     if game_state == 1: # main game state
+        
         player.enabled = True
         inventory_BG.enabled = False
         inventory.enabled = False
@@ -242,6 +278,18 @@ def update():
         Exit_Button.on_click=application.quit
     if game_state == 7:
         #Start_Button text is changed to "Resume game"
+        player.enabled = False
+        inventory_BG.enabled = False
+        inventory.enabled = False
+        hand.enabled=False
+        sky.enabled=True
+        hotbar.enabled=False
+        hotbar_BG.enabled=False
+        hotbar_cursor.enabled=False
+        Write_Button.enabled = True
+        Return_Button.enabled = True
+        Write_Button.on_click = Write_Meth
+        Return_Button.on_click = Return_Meth
         supes()
        
     
@@ -320,20 +368,22 @@ class InvItem(Draggable):
         if self.ID == 6: self.texture = pendulum_icon_texture
         #tells the hotbar/inventory to load the apple icon
         if self.ID == 7: self.texture = apple_icon_texture
-        if self.hovered:
-            print("yooooo")
+        
         if self.ID == 8: self.texture = cannon_icon_texture
         if self.ID == 9: self.texture = while_icon_texture
         if self.ID == 10: self.texture = force_vector_icon_texture
         if self.ID == 11: self.texture = Friction_icon_texture
         if self.ID == 12: self.texture = For_icon_texture
-
+        
+            
     def drag(self):
         self.xy_pos = (self.x, self.y) # store current position
-
+        
+        print(self.ID)
     def drop(self):
         print('before snap:')
         print(f'x: {self.x}')
+        
         print(f'y: {self.y}')
 
         """ 
@@ -382,6 +432,7 @@ class InvItem(Draggable):
 
         print('after snap')
         print(f'x: {self.x}')
+        
         print(f'y: {self.y}')
         print('======')
 
@@ -434,6 +485,7 @@ class InvItem(Draggable):
         # pls watch for explanation
         x = int(self.x * self.parent.texture_scale[0])
         y = int(self.y * self.parent.texture_scale[1])
+        
         return Vec2(x,y)
 
 class Grid(Entity):
@@ -516,7 +568,7 @@ class Hotbar(Grid):
                         print('pick this block!') 
                         print(block_pick)
                         print(child.ID)
-
+                        
                     block_pick = child.ID
 
                     if debug == True:
@@ -589,15 +641,27 @@ class Voxel(Button):
         
 
     def input(self,key):
+        global game_state
         # if the current block is being hovered on by the mouse
         # and the game state is the active gameplay
         # then build/destroy blocks
         #writes to placed file, and to destroyed file for save data
+        if block_pick == 7:
+                    global cupes
+                    #global game_state
+                    if held_keys["o"]:
+                        cupes = True
+            
+                        game_state = 7
+                    
         if self.hovered and game_state == 1 and block_pick > 0: 
+            
             if key == 'left mouse down':
                 global place
                 global typea
                 global Cannonplace
+                global reload_bool
+                reload_bool = True
                 punch_sound.play()
                 if block_pick == 1: 
                     voxel = Voxel(position = self.position + mouse.normal, texture = grass_texture) 
@@ -633,6 +697,7 @@ class Voxel(Button):
                  
                 #tells the game to load the apple block
                 if block_pick == 7:
+                    
                     voxel = apple(position = self.position+mouse.normal)
 
                 if block_pick==8 and Cannonplace<1:
@@ -1061,6 +1126,7 @@ class pendulum(Button):
         
 #here is the class for the apple sim   
 class apple(Button):
+    
     def __init__(self, position = (0,0,0)):
         super().__init__(
             parent = scene,
@@ -1077,10 +1143,12 @@ class apple(Button):
         
             
     def update(self):
+       
         apple_sim(self)
         
         #this destroys the block to prevent memory overflow
         if self.apple.y <= -10:
+                
                 destroy(self)
                 destroy(self.apple)
 class solarSystem(Button):
