@@ -4,6 +4,10 @@ A Digital Physics Lab in a Blocky Voxel World
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
 The purpose of this project is to develop a Virtual Environment (V.E) in which students can learn how to code through working on simulations, I have been working on this project with Dr. Trevor Tomesh, since February of 2023, and we plan on publishing a paper together by the end of this semester. My work this semester will be to establish an in game code editor that actually changes the code of the game file, as not to overwhelm new coders with the (as of 2/5/2024) 2000+ lines of code. Below you can see the features I've added since starting my work which I go into more detail in my walkthrough video. 
+
+# Semester Summary
+
+I've aachieved just about every goal, I've set out to do. I have a generalized code editor that allows you to edit in game 3 sims for now. I need to work on the formatting before I do some of the more complicated ones. It does not tell you what errors are currently but that's most because I can't think of an intuitive way to display that in game (this is a lie I have no idea how to do that, something something STDERR I think???) and it's finally abstract to any pc running the code and not just mine.  
 # Dependencies:
 ## On Linux: 
 Labcraft uses python 3.6:
