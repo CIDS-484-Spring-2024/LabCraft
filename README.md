@@ -90,3 +90,5 @@ python labcraft.py
  -Added a Ursina test program that lets you edit code and test it while the file is running
 
  -Started integrating this into LabCraft, this is barebones currently is terrible. But so is the rest of this projects.
+
+ -It's in LabCraft now! If you have the apple sim force vector sim or Solar Sytem Sim in your inventory and the cursor is over it, you can press O and modify the code. (note this will save to the actually file, so if you mess it up, you mess it up) 
