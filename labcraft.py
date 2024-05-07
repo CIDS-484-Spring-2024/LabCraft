@@ -6,6 +6,7 @@ import Solar_Simul
 import Force_Simul
 import math
 import importlib
+import os
 #from terraingen import *
 window.borderless = True
 
@@ -131,15 +132,21 @@ def supes():
             window.color = color._25
             Barg = ""
             if b_pick == 7:
-             with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'r+') as f:
+             script_dir = os.path.dirname(os.path.abspath(__file__))
+             file_path = os.path.join(script_dir, "apple_simul.py")
+             with open(file_path, 'r+') as f:
     # Read the entire content of the file
                 Barg = f.read()
             if b_pick == 5:
-                with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/Solar_Simul.py", 'r+') as f:
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+                file_path = os.path.join(script_dir, "Solar_Simul.py")
+                with open(file_path, 'r+') as f:
     # Read the entire content of the file
                  Barg = f.read()
             if b_pick == 10:
-                with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/Force_Simul.py", 'r+') as f:
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+                file_path = os.path.join(script_dir, "Force_Simul.py")
+                with open(file_path, 'r+') as f:
     # Read the entire content of the file
                  Barg = f.read()  
             file_text = TextField(max_lines=30, scale=1, register_mouse_input = True, text='1234',wordwrap = 30)
@@ -151,13 +158,19 @@ def supes():
 def Write_Meth():
     global b_pick
     if b_pick == 7:
-        with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'w') as f:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, "apple_simul.py")
+        with open(file_path, 'w') as f:
          f.write(file_text.text)
     if b_pick == 5:
-        with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/Solar_Simul.py", 'w') as f:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, "Solar_Simul.py")
+        with open(file_path, 'w') as f:
          f.write(file_text.text)
     if b_pick == 10:
-        with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/Force_Simul.py", 'w') as f:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, "Force_Simul.py")
+        with open(file_path, 'w') as f:
          f.write(file_text.text)
 def Return_Meth():
     global game_state
