@@ -2,7 +2,8 @@ from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 from sims import *
 import apple_simul
-
+import Solar_Simul
+import Force_Simul
 import math
 import importlib
 #from terraingen import *
@@ -13,7 +14,8 @@ global player
 player = FirstPersonController()
 mouse.locked = True
 window.fullscreen = False
-
+global b_pick 
+b_pick = 0
 # block textures
 grass_texture = load_texture('assets/grass_block.png')
 stone_texture = load_texture('assets/stone_block.png')
@@ -121,16 +123,25 @@ Return_Button.enabled = False
 def supes():
         global cupes 
         global file_text
+        global b_pick
         if cupes: 
             
             window.color = color.color(0, 0, 0)
             Button.default_color = color._20
             window.color = color._25
             Barg = ""
-            with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'r+') as f:
+            if b_pick == 7:
+             with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'r+') as f:
     # Read the entire content of the file
                 Barg = f.read()
-                
+            if b_pick == 5:
+                with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/Solar_Simul.py", 'r+') as f:
+    # Read the entire content of the file
+                 Barg = f.read()
+            if b_pick == 10:
+                with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/Force_Simul.py", 'r+') as f:
+    # Read the entire content of the file
+                 Barg = f.read()  
             file_text = TextField(max_lines=30, scale=1, register_mouse_input = True, text='1234',wordwrap = 30)
             from textwrap import dedent
             file_text.text = dedent(Barg)
@@ -138,13 +149,19 @@ def supes():
            
             cupes = False
 def Write_Meth():
-    
-    with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'w') as f:
-        f.write(file_text.text)
-    
+    global b_pick
+    if b_pick == 7:
+        with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/apple_simul.py", 'w') as f:
+         f.write(file_text.text)
+    if b_pick == 5:
+        with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/Solar_Simul.py", 'w') as f:
+         f.write(file_text.text)
+    if b_pick == 10:
+        with open("C:/Users/Zach's LapTop/OneDrive/Desktop/GitLabcraft/labcraftZach/Force_Simul.py", 'w') as f:
+         f.write(file_text.text)
 def Return_Meth():
     global game_state
-    global apple_simul
+    #global apple_simul
 
     reload()
     destroy(file_text)
@@ -153,12 +170,19 @@ def Return_Meth():
     
     game_state = 1
 def reload():
-   
+    global b_pick
     importlib.invalidate_caches()
     try:
         import apple_simul
+        import Solar_Simul
+        import Force_Simul
         print("RELOADIIIIIIIIIIIIIING")
-        importlib.reload(apple_simul)
+        if b_pick == 7:
+            importlib.reload(apple_simul)
+        if b_pick == 5:
+            importlib.reload(Solar_Simul)
+        if b_pick == 10:
+            importlib.reload(Force_Simul)
     except:
         print("--------reached---------------")
    
@@ -645,12 +669,13 @@ class Voxel(Button):
         # and the game state is the active gameplay
         # then build/destroy blocks
         #writes to placed file, and to destroyed file for save data
-        if block_pick == 7:
+        if block_pick != 0:
                     global cupes
+                    global b_pick
                     #global game_state
                     if held_keys["o"]:
                         cupes = True
-            
+                        b_pick = block_pick
                         game_state = 7
                     
         if self.hovered and game_state == 1 and block_pick > 0: 
@@ -855,7 +880,7 @@ class FVSim(Button):
         )
         self.t=0.0
     def update(self):
-        FV_sim(self)
+        Force_Simul.FV_sim(self)
         if self.hovered and held_keys['right mouse']:
             destroy(self)
 class cannon(Button):
@@ -1150,6 +1175,7 @@ class apple(Button):
                 destroy(self)
                 destroy(self.apple)
 class solarSystem(Button):
+    
     def __init__(self, position = (0,0,0), texture = uranus_texture):
         super().__init__(
             parent = scene,
@@ -1174,7 +1200,7 @@ class solarSystem(Button):
         self.t = 0.0
 
     def update(self):
-        oscSim(self)
+        Solar_Simul.oscSim(self)
         self.y=4
         if self.hovered and held_keys['right mouse']:
             destroy(self.mercury)
